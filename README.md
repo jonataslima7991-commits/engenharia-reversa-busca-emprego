@@ -4,7 +4,7 @@
 
 Projeto desenvolvido para a **2ª Amostra Acadêmica da Faculdade de Tecnologia de Santana de Parnaíba (Fatec)**, curso de Ciência de Dados.
 
-**Autores:** Guilherme Soares Santos & Jonatas Oliveira de Lima
+**Autores:** Jonatas Oliveira de Lima e Guilherme Soares Santos
 
 ---
 
@@ -21,13 +21,13 @@ Este projeto aplica **engenharia reversa** sobre o banco de dados de vagas da pl
 | Categoria | Qtd. | % |
 |---|---|---|
 | Bolsas de Mestrado / Doutorado | 3.137 | 33,51% |
-| Vagas Efetivas / Outros | 2.655 | 28,37% |
-| Outras Bolsas (Graduação/Pesquisa) | 2.342 | 25,02% |
+| Vagas Efetivas CLT/PJ | 2.655 | 28,37% |
+| Bolsas de Pesquisa | 2.342 | 25,02% |
 | Estágios Corporativos | 1.226 | 13,10% |
 
-- 🔎 Buscar por **"Analista de Dados"** abre **6,3x mais portas** no mercado corporativo do que buscar por "Cientista de Dados"
+- 🔎 Buscar por **"Dados"** abre **6,3x mais portas** no mercado corporativo do que buscar por "Cientista de Dados"
 - 💰 **93,2% das vagas** não divulgam remuneração — confirmando a assimetria de informação de Akerlof (1970)
-- 🎓 Bolsas acadêmicas correspondem a **58,53%** do total de vagas encontradas sob o termo genérico "Dados"
+- 🎓 Bolsas de Mestrado/Doutorado/Pesquisa correspondem a **58,53%** do total de vagas encontradas sob o termo "Dados"
 
 ### Remuneração Média por Cargo (vagas com salário exposto)
 
