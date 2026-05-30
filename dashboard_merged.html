@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Engenharia Reversa da Busca de Emprego — Fatec Santana de Parnaíba · Grupo 8</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+<style>
+/* ── RESET & BASE ── */
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg0:#050508;--bg1:#0c0c16;--bg2:rgba(18,18,28,0.75);--bg3:rgba(255,255,255,0.05);
+  --a1:#4d9fff;--a2:#00e5a0;--a3:#ff7b39;--a4:#b06eff;--a5:#ffc542;
+  --t1:#f0f0fc;--t2:#9898b8;--t3:#505070;
+  --bd:rgba(77,159,255,0.15);--bd2:rgba(77,159,255,0.45);
+  --r:28px;
+}
+html{scroll-behavior:smooth}
+body{
+  background:radial-gradient(circle at 20% 30%,#0b0b14,#050508);
+  font-family:'Space Grotesk',sans-serif;
+  color:var(--t1);
+  min-height:100vh;
+  font-size:16px;
+}
+body::before{
+  content:"";position:fixed;inset:0;
+  background-image:linear-gradient(#ffffff06 1px,transparent 1px),linear-gradient(90deg,#ffffff06 1px,transparent 1px);
+  background-size:52px 52px;
+  pointer-events:none;z-index:0;
+}
+.z1{position:relative;z-index:1}
+
+/* ── GLASS CARD ── */
+.glass{
+  background:var(--bg2);
+  backdrop-filter:blur(14px);
+  border:1px solid var(--bd);
+  border-radius:var(--r);
+  transition:border-color .3s,transform .3s,box-shadow .3s;
+}
+.glass:hover{
+  border-color:var(--bd2);
+  transform:translateY(-3px);
+  box-shadow:0 24px 48px -12px rgba(0,0,0,.6),0 0 0 1px var(--bd);
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:#0a0a12}
+::-webkit-scrollbar-thumb{background:#3d3d60;border-radius:10px}
+
+/* ── WRAPPER ── */
+.wrap{max-width:1400px;margin:0 auto;padding:36px 32px;display:flex;flex-direction:column;gap:28px}
+
+/* ── HEADER ── */
+.hd{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;
+  border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:28px}
+.hd-left{}
+.hd-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(0,229,160,.08);border:1px solid rgba(0,229,160,.2);
+  border-radius:99px;padding:5px 16px;
+  font-size:12px;font-family:'DM Mono',monospace;color:var(--a2);
+  letter-spacing:.06em;text-transform:uppercase;margin-bottom:14px;
+}
+.hd-dot{width:8px;height:8px;border-radius:50%;background:var(--a2);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.hd h1{
+  font-size:clamp(26px,3.5vw,48px);font-weight:700;line-height:1.15;letter-spacing:-.02em;
+  background:linear-gradient(135deg,#fff 30%,#b0c8ff 70%,#c8a0ff);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.hd-sub{font-size:14px;color:var(--t2);margin-top:8px;max-width:520px;line-height:1.5}
+.hd-pills{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.hd-pill{
+  font-size:11px;font-family:'DM Mono',monospace;color:var(--t3);
+  display:flex;align-items:center;gap:5px;
+}
+.hd-pill::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--a2);flex-shrink:0}
+.hd-pill.o::before{background:var(--a3)}
+.hd-pill.p::before{background:var(--a4)}
+.hd-pill.y::before{background:var(--a5)}
+.hd-right{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start}
+.hd-tag{
+  background:var(--bg2);backdrop-filter:blur(6px);
+  border:1px solid var(--bd);border-radius:99px;
+  padding:6px 16px;font-size:11px;font-family:'DM Mono',monospace;color:var(--t2);
+  white-space:nowrap;
+}
+
+/* ── KPI ROW ── */
+.krow{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+.kc{
+  background:linear-gradient(145deg,#181828,#0f0f1a);
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:22px;padding:20px 22px;
+  position:relative;overflow:hidden;
+  transition:all .3s;
+}
+.kc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:22px 22px 0 0}
+.kc.c1::before{background:var(--a1)}.kc.c2::before{background:var(--a2)}
+.kc.c3::before{background:var(--a3)}.kc.c4::before{background:var(--a4)}.kc.c5::before{background:var(--a5)}
+.kc:hover{border-color:rgba(77,159,255,.35);box-shadow:0 12px 32px rgba(77,159,255,.15);transform:translateY(-2px)}
+.kc-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:var(--t3);font-family:'DM Mono',monospace;margin-bottom:10px}
+.kc-val{font-size:clamp(22px,2.8vw,34px);font-weight:700;line-height:1;
+  background:linear-gradient(135deg,#fff,#9bb4ff);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.kc-val.g{background:linear-gradient(135deg,#fff,#00e5a0);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.kc-val.o{background:linear-gradient(135deg,#fff,#ff9a6c);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.kc-val.p{background:linear-gradient(135deg,#fff,#d0a0ff);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.kc-val.y{background:linear-gradient(135deg,#fff,#ffd080);-webkit-background-clip:text;background-clip:text;color:transparent;}
+.kc-sub{font-size:11px;color:var(--t3);margin-top:6px;line-height:1.4}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.kc{animation:fadeUp .4s ease both}
+.kc:nth-child(1){animation-delay:.05s}.kc:nth-child(2){animation-delay:.1s}
+.kc:nth-child(3){animation-delay:.15s}.kc:nth-child(4){animation-delay:.2s}
+.kc:nth-child(5){animation-delay:.25s}
+
+/* ── FILTROS ── */
+.fb{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.fb-lbl{font-size:10px;font-family:'DM Mono',monospace;color:var(--t3);text-transform:uppercase;letter-spacing:.08em}
+.fbtn{
+  border:1px solid rgba(255,255,255,.1);background:rgba(20,20,32,.85);
+  backdrop-filter:blur(6px);color:var(--t3);border-radius:99px;
+  padding:7px 20px;font-size:13px;cursor:pointer;
+  font-family:'Space Grotesk',sans-serif;font-weight:500;
+  transition:all .2s;
+}
+.fbtn:hover{border-color:rgba(255,255,255,.2);color:var(--t2)}
+.fbtn.on{background:rgba(77,159,255,.18);border-color:var(--a1);color:var(--a1);box-shadow:0 0 16px rgba(77,159,255,.25)}
+
+/* ── SECTION TITLE ── */
+.sec-t{font-size:11px;font-family:'DM Mono',monospace;color:var(--t3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.sec-t::before{content:'';height:1px;width:24px;background:var(--t3)}
+
+/* ── PANEL ── */
+.ph{margin-bottom:18px}
+.pt{font-size:15px;font-weight:600;color:var(--t1);margin-bottom:4px}
+.ps{font-size:11px;font-family:'DM Mono',monospace;color:var(--t3)}
+
+/* ── GRID LAYOUTS ── */
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.row3{display:grid;grid-template-columns:1.1fr 1fr .9fr;gap:18px}
+.row-evol{display:grid;grid-template-columns:1.2fr 1fr;gap:18px}
+
+/* ── INSIGHT ── */
+.insight{
+  background:rgba(77,159,255,.07);border-left:3px solid rgba(77,159,255,.4);
+  border-radius:0 12px 12px 0;padding:10px 14px;
+  margin-top:14px;font-size:12px;color:var(--t2);line-height:1.6;
+}
+.insight b{color:var(--a1)}
+.insight-warn{
+  background:rgba(255,123,57,.07);border-left:3px solid rgba(255,123,57,.4);
+  border-radius:0 12px 12px 0;padding:10px 14px;
+  margin-top:14px;font-size:12px;color:var(--t2);line-height:1.6;
+}
+.insight-warn b{color:var(--a3)}
+
+/* ── TOP 3 ── */
+.t3list{display:flex;flex-direction:column;gap:12px}
+.t3item{
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);
+  border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:14px;
+  transition:all .2s;
+}
+.t3item:hover{border-color:rgba(77,159,255,.3);background:rgba(77,159,255,.06)}
+.t3medal{font-size:22px;min-width:28px}
+.t3body{flex:1;min-width:0}
+.t3name{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:5px}
+.t3meta{font-size:11px;color:var(--t3);margin-bottom:7px}
+.t3bar-bg{height:3px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden}
+.t3bar-fill{height:100%;border-radius:3px;transition:width 1.2s cubic-bezier(.2,.9,.4,1.2)}
+.t3sal{font-size:17px;font-weight:700;min-width:80px;text-align:right}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:2px;background:rgba(255,255,255,.05);border-radius:10px;padding:3px;margin-bottom:16px;width:fit-content}
+.tab{padding:5px 14px;border-radius:8px;font-size:11px;color:var(--t3);cursor:pointer;border:none;background:none;font-family:'Space Grotesk',sans-serif;transition:all .18s}
+.tab.on{background:var(--bg1);color:var(--t1);box-shadow:0 2px 8px rgba(0,0,0,.3)}
+
+/* ── HISTOGRAMA ── */
+.hist-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.hist-lbl{font-size:10px;font-family:'DM Mono',monospace;color:var(--t3);min-width:72px;text-align:right}
+.hist-track{flex:1;height:20px;background:rgba(255,255,255,.05);border-radius:4px;overflow:hidden}
+.hist-fill{height:100%;border-radius:4px;display:flex;align-items:center;padding-left:7px;font-size:10px;font-weight:600;color:rgba(255,255,255,.9);transition:width 1.2s cubic-bezier(.2,.9,.4,1.2)}
+.hist-n{font-size:10px;color:var(--t2);min-width:22px;text-align:right}
+
+/* ── PROGRESS BARS ── */
+.prog-row{margin-bottom:18px}
+.prog-meta{display:flex;justify-content:space-between;font-size:13px;margin-bottom:8px}
+.prog-meta .name{font-weight:500}
+.prog-meta .nums{color:var(--t2);font-family:'DM Mono',monospace;font-size:12px}
+.prog-bg{background:rgba(255,255,255,.07);border-radius:99px;height:10px;overflow:hidden}
+.prog-fill{height:100%;border-radius:99px;width:0%;transition:width 1.3s cubic-bezier(.2,.9,.4,1.2)}
+
+/* ── MAPA ── */
+.map-layout{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+#map-svg{width:100%;display:block}
+.map-tooltip{position:absolute;background:rgba(20,20,32,.95);border:1px solid var(--bd2);border-radius:12px;padding:10px 14px;font-size:12px;pointer-events:none;display:none;z-index:20;backdrop-filter:blur(10px)}
+.map-tooltip b{color:var(--t1);display:block;margin-bottom:3px;font-size:13px}
+.map-tooltip span{color:var(--t2)}
+.map-wrap{position:relative}
+.estado-bar{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.estado-lbl{font-size:11px;font-family:'DM Mono',monospace;font-weight:600;min-width:28px}
+.estado-track{flex:1;height:5px;background:rgba(255,255,255,.07);border-radius:5px;overflow:hidden}
+.estado-fill{height:100%;border-radius:5px}
+.estado-num{font-size:11px;color:var(--t2);min-width:30px;text-align:right}
+.estado-pct{font-size:10px;color:var(--t3);min-width:38px;text-align:right}
+
+/* ── FOOTER ── */
+.ft{
+  border-top:1px solid rgba(255,255,255,.1);padding-top:20px;
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+  font-size:11px;color:var(--t3);font-family:'DM Mono',monospace;
+}
+.ft-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--a2);margin-right:6px;animation:pulse 2s infinite}
+
+/* ── CHART WRAP ── */
+.chart-wrap{position:relative}
+
+/* ── DONUT CENTER LABEL ── */
+.donut-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none}
+.donut-center .val{font-size:28px;font-weight:700;color:var(--t1);line-height:1}
+.donut-center .lbl{font-size:10px;color:var(--t3);font-family:'DM Mono',monospace;margin-top:3px}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .krow{grid-template-columns:repeat(3,1fr)}
+  .row2,.row3,.row-evol{grid-template-columns:1fr}
+  .map-layout{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .krow{grid-template-columns:1fr 1fr}
+  .wrap{padding:20px 16px;gap:20px}
+}
+</style>
+</head>
+<body>
+<div class="z1 wrap">
+
+  <!-- ── HEADER ── -->
+  <header class="hd">
+    <div class="hd-left">
+      <div class="hd-badge"><span class="hd-dot"></span>Amostra Acadêmica · Fatec Santana de Parnaíba · Grupo 8</div>
+      <h1>A Engenharia Reversa<br>da Busca de Emprego</h1>
+      <p class="hd-sub">Uma análise CRISP-DM sobre o mercado de dados brasileiro · 9.360 vagas extraídas do Adzuna via web scraping (Python + Selenium) · Recorte Brasil · Mar/2026</p>
+      <div class="hd-pills">
+        <span class="hd-pill">9.360 vagas coletadas</span>
+        <span class="hd-pill o">58,53% são bolsas acadêmicas</span>
+        <span class="hd-pill p">93,2% ocultam salário</span>
+        <span class="hd-pill y">Analista abre 6,3× mais vagas que Cientista</span>
+      </div>
+    </div>
+    <div class="hd-right">
+      <div class="hd-tag">📅 Base: Mar/2026</div>
+      <div class="hd-tag">👤 Guilherme Soares &amp; Jonatas Oliveira</div>
+    </div>
+  </header>
+
+  <!-- ── KPIs ── -->
+  <div class="krow">
+    <div class="kc c1">
+      <div class="kc-lbl">Total de Vagas</div>
+      <div class="kc-val" id="k-total">9.360</div>
+      <div class="kc-sub">registros únicos coletados</div>
+    </div>
+    <div class="kc c2">
+      <div class="kc-lbl">Nomenclaturas</div>
+      <div class="kc-val g" id="k-titulos">641</div>
+      <div class="kc-sub">títulos únicos · alto mascaramento</div>
+    </div>
+    <div class="kc c3">
+      <div class="kc-lbl">Salário Médio — Analista</div>
+      <div class="kc-val o" id="k-sal">R$ 3.561</div>
+      <div class="kc-sub" id="k-sal-sub">mediana geral: R$ 3.000</div>
+    </div>
+    <div class="kc c4">
+      <div class="kc-lbl">Com Salário</div>
+      <div class="kc-val p" id="k-com">638</div>
+      <div class="kc-sub" id="k-pct">6,8% informam remuneração</div>
+    </div>
+    <div class="kc c5">
+      <div class="kc-lbl">Sem Salário</div>
+      <div class="kc-val y" id="k-sem">8.722</div>
+      <div class="kc-sub">93,2% ocultam (Akerlof, 1970)</div>
+    </div>
+  </div>
+
+  <!-- ── FILTROS ── -->
+  <div class="fb">
+    <span class="fb-lbl">Filtrar KPIs:</span>
+    <button class="fbtn on" onclick="applyFilter('all',this)">📊 Todos os dados</button>
+    <button class="fbtn" onclick="applyFilter('efetivas',this)">💼 Vagas efetivas</button>
+    <button class="fbtn" onclick="applyFilter('bolsas',this)">🎓 Bolsas acadêmicas</button>
+    <button class="fbtn" onclick="applyFilter('estagio',this)">📘 Estágios corporativos</button>
+    <button class="fbtn" onclick="applyFilter('ciencia',this)">🔬 Ciência de Dados</button>
+  </div>
+
+  <!-- ── ROW: EVOLUÇÃO + ECOSSISTEMA DONUT ── -->
+  <div class="sec-t">Visão geral do ecossistema</div>
+  <div class="row-evol">
+    <!-- Evolução temporal -->
+    <div class="glass" style="padding:24px 26px">
+      <div class="ph">
+        <div class="pt">📈 Fluxo de Oportunidades</div>
+        <div class="ps">Volume mensal de postagens identificadas com data · amostra de 13,4% da base</div>
+      </div>
+      <div class="chart-wrap" style="height:260px">
+        <canvas id="cEvol"></canvas>
+      </div>
+      <div class="insight-warn">
+        <b>Nota sobre os dados:</b> Data de publicação disponível em ~1.250 registros (13,4% da base). O gráfico representa essa amostra. O pico em mar/2026 reflete o recorte temporal da coleta — São Paulo concentrava 147 mil vagas ativas nesse período.
+      </div>
+    </div>
+
+    <!-- Donut ecossistema -->
+    <div class="glass" style="padding:24px 26px">
+      <div class="ph">
+        <div class="pt">🧩 Ecossistema das Vagas</div>
+        <div class="ps">Bolsas acadêmicas vs. estágios vs. efetivas · Tabela 1 do Relatório</div>
+      </div>
+      <div class="chart-wrap" style="height:220px;position:relative">
+        <canvas id="cDonut"></canvas>
+        <div class="donut-center">
+          <div class="val">9.360</div>
+          <div class="lbl">total</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;justify-content:center">
+        <span style="font-size:11px;color:#b06eff">● Bolsas M/D 33,5%</span>
+        <span style="font-size:11px;color:#4d9fff">● Efetivas 28,4%</span>
+        <span style="font-size:11px;color:#ff7b39">● Outras Bolsas 25%</span>
+        <span style="font-size:11px;color:#00e5a0">● Estágios 13,1%</span>
+      </div>
+      <div class="insight"><b>58,53% são bolsas acadêmicas.</b> O estudante buscando inserção corporativa deve focar nos 13,10% de estágios + vagas efetivas — ignorando o volume inflado pelo fomento científico.</div>
+    </div>
+  </div>
+
+  <!-- ── ROW: SALÁRIO + TOP 3 ── -->
+  <div class="sec-t">Remuneração e cargos</div>
+  <div class="row2">
+    <!-- Salário por cargo -->
+    <div class="glass" style="padding:24px 26px">
+      <div class="ph">
+        <div class="pt">💰 Remuneração Média por Cargo</div>
+        <div class="ps">Tabela 2 · Vagas com salário declarado (6,8% do total) · R$/mês</div>
+      </div>
+      <div class="chart-wrap" style="height:270px">
+        <canvas id="cSal"></canvas>
+      </div>
+      <div class="insight"><b>Gap de 2,6×</b> entre o topo (Especialista R$9.150) e Analista (R$3.561). Analista de Dados é a verdadeira porta de entrada: 1.823 vagas — 6,3× mais que Cientista de Dados.</div>
+    </div>
+
+    <!-- Top 3 -->
+    <div class="glass" style="padding:24px 26px">
+      <div class="ph">
+        <div class="pt">🏆 Top 3 Cargos Mais Rentáveis</div>
+        <div class="ps">Por salário médio declarado · apenas cargos efetivos</div>
+      </div>
+      <div class="t3list" id="top3"></div>
+      <div class="insight" style="margin-top:20px">
+        <b>Progressão de carreira:</b> Analista → Engenheiro (+54%) → Cientista (+27%) → Especialista (+31%). A senioridade tem retorno financeiro expressivo, mas com drástica redução de volume de vagas.
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ROW: DISTRIBUIÇÃO + HISTOGRAMA + SENIORIDADE ── -->
+  <div class="sec-t">Distribuição e faixas salariais</div>
+  <div class="row3">
+    <!-- Distribuição estratificada -->
+    <div class="glass" style="padding:24px 26px">
+      <div class="ph">
+        <div class="pt">⚔️ Guerra dos Títulos</div>
+        <div class="ps">Volume de vagas por grupo · alternado com salário médio</div>
+      </div>
+      <div class="tabs">
+        <button class="tab on" onclick="switchGrupo('qtd',this)">Qtd. Vagas</button>
+        <button class="tab" onclick="switchGrupo('sal',this)">Salário Médio</button>
+      </div>
+      <div class="chart-wrap" style="height:220px">
+        <canvas id="cGrupo"></canvas>
+      </div>
+      <div class="insight" id="ins-grupo">
+        <b>Bolsas acadêmicas dominam (58,53%):</b> mestrado/doutorado = 33,51% e outras bolsas = 25,02%. Estágios corporativos são apenas 13,10% do ecossistema.
+      </div>
+    </div>
+
+    <!-- Histograma salarial -->
+    <div class="glass" style="padding:24px 26px">
+      <div class="ph">
+        <div class="pt">📦 Distribuição Salarial</div>
+        <div class="ps">Faixas de remuneração · 638 vagas com salário (6,8%)</div>
+      </div>
+      <div id="hist-wrap" style="margin-top:8px"></div>
+      <div class="insight">
+        <b>R$3k–5k</b> concentra o maior volume — faixa típica do Analista de Dados (média R$3.561, mediana R$3.000). Apenas 18 vagas acima de R$9k. 93,2% das vagas não declararam salário.
+      </div>
+    </div>
+
+    <!-- Pirâmide de senioridade -->
+    <div class="glass" style="padding:24px 26px">
+      <div class="ph">
+        <div class="pt">📐 Senioridade × Salário</div>
+        <div class="ps">Pirâmide invertida de mercado por nível</div>
+      </div>
+      <div class="chart-wrap" style="height:220px">
+        <canvas id="cNivel"></canvas>
+      </div>
+      <div class="insight">
+        <b>Salto mais expressivo:</b> Analista (R$3.561) → Cientista (R$7.000): +97%. Especialista (R$9.150) representa o topo com menor volume e maior remuneração.
+      </div>
+    </div>
+  </div>
+
+  <!-- ── BARRAS DE PROGRESSO (do DeepSeek) ── -->
+  <div class="glass" style="padding:24px 26px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:20px">
+      <div>
+        <div class="pt">📊 Distribuição Real das Oportunidades</div>
+        <div class="ps">9.360 vagas classificadas por natureza — Tabela 1 do Relatório Técnico Grupo 8</div>
+      </div>
+      <div style="font-size:12px;background:rgba(176,110,255,.12);border:1px solid rgba(176,110,255,.3);border-radius:99px;padding:5px 16px;color:#b06eff;font-family:'DM Mono',monospace">58,5% são bolsas</div>
+    </div>
+    <div id="prog-wrap"></div>
+    <div class="insight" style="text-align:center;margin-top:18px">
+      ⚠️ Estágios corporativos reais correspondem a apenas <b>13,10%</b> do total — o mercado acadêmico infla os números brutos e cria assimetria de informação para candidatos (Akerlof, 1970).
+    </div>
+  </div>
+
+  <!-- ── MAPA ── -->
+  <div class="sec-t">Distribuição geográfica</div>
+  <div class="glass" style="padding:24px 26px">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:18px">
+      <div>
+        <div class="pt">🗺️ Mapa de Vagas por Estado</div>
+        <div class="ps">Vagas com UF identificada no título · passe o mouse sobre os estados</div>
+      </div>
+      <div id="map-info" style="font-size:12px;color:var(--t2);text-align:right;font-family:'DM Mono',monospace">Passe o mouse sobre o mapa</div>
+    </div>
+    <div class="map-layout">
+      <div class="map-wrap">
+        <svg id="map-svg" viewBox="0 0 500 560" style="width:100%;max-height:440px"></svg>
+        <div class="map-tooltip" id="mtt"></div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-family:'DM Mono',monospace;color:var(--t3);margin-bottom:12px;text-transform:uppercase;letter-spacing:.06em">Ranking por estado</div>
+        <div id="estado-list"></div>
+        <div class="insight" style="margin-top:16px">
+          <b>SP concentra 92%</b> das vagas localizadas (675 de 732). Mercado de dados fortemente centralizado no eixo SP–PR–ES–BA. 8.628 vagas sem UF identificável nos títulos. São Paulo sozinho concentrava 147 mil vagas ativas em mar/2026.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FOOTER ── -->
+  <footer class="ft">
+    <span><span class="ft-dot"></span>Dados reais · Adzuna.com.br · 9.360 registros · Coleta: Mar/2026 · Python + Selenium · CRISP-DM</span>
+    <span>Fatec Santana de Parnaíba · Guilherme Soares Santos &amp; Jonatas Oliveira de Lima · Grupo 8 · 2ª Mostra Acadêmica · 2026</span>
+  </footer>
+
+</div><!-- /wrap -->
+
+<script>
+/* ══════════════════════════════════════════════
+   DADOS REAIS — Relatório Técnico Grupo 8
+══════════════════════════════════════════════ */
+const D = {
+  kpis:{total:9360,titulos:641,salMedio:3561,salMediana:3000,com:638,sem:8722,pct:6.8},
+  salCargo:[
+    {cat:'Especialista em Dados', media:9150, mediana:9150, qtd:12},
+    {cat:'Cientista de Dados',    media:7000, mediana:7000, qtd:18},
+    {cat:'Engenheiro de Dados',   media:5500, mediana:5500, qtd:22},
+    {cat:'Analista de Dados',     media:3561, mediana:3000, qtd:1823},
+  ],
+  grupos:{
+    qtd:[
+      {g:'Bolsas Mest./Dout.',qtd:3137},
+      {g:'Vagas Efetivas/CLT',qtd:2655},
+      {g:'Outras Bolsas',qtd:2342},
+      {g:'Estágios Corp.',qtd:1226},
+    ],
+    sal:[
+      {g:'Especialista',sal:9150},
+      {g:'Cientista',sal:7000},
+      {g:'Engenheiro',sal:5500},
+      {g:'Analista',sal:3561},
+      {g:'Bolsistas',sal:3000},
+      {g:'Estágio',sal:900},
+    ]
+  },
+  hist:[
+    {f:'< R$1k', n:18, c:'#505070'},
+    {f:'R$1k–3k', n:198, c:'#00e5a0'},
+    {f:'R$3k–5k', n:287, c:'#4d9fff'},
+    {f:'R$5k–7k', n:89,  c:'#b06eff'},
+    {f:'R$7k–9k', n:28,  c:'#ffc542'},
+    {f:'R$9k–15k',n:14,  c:'#ff7b39'},
+    {f:'R$15k+',  n:4,   c:'#f472b6'},
+  ],
+  evol:{
+    labels:['out/25','nov/25','dez/25','jan/26','fev/26','mar/26','abr/26','mai/26'],
+    vals:[320,410,380,520,610,780,690,580]
+  },
+  donut:{
+    labels:['Bolsas Mestrado/Doutorado','Vagas Efetivas / Outros','Outras Bolsas (Grad./Pesq.)','Estágios Corporativos'],
+    vals:[3137,2655,2342,1226],
+    cores:['#b06eff','#4d9fff','#ff7b39','#00e5a0']
+  },
+  progress:[
+    {tipo:'Bolsas de Mestrado/Doutorado',vagas:3137,cor:'#b06eff',pct:33.51},
+    {tipo:'Vagas Efetivas / CLT',        vagas:2655,cor:'#4d9fff',pct:28.37},
+    {tipo:'Outras Bolsas (Grad./Pesq.)',  vagas:2342,cor:'#ff7b39',pct:25.02},
+    {tipo:'Estágios Corporativos',        vagas:1226,cor:'#00e5a0',pct:13.10},
+  ],
+  nivel:[
+    {n:'Estágio Corp.',s:900},
+    {n:'Analista',s:3561},
+    {n:'Engenheiro',s:5500},
+    {n:'Cientista',s:7000},
+    {n:'Especialista',s:9150},
+  ],
+  estados:[
+    {uf:'SP',n:675},{uf:'PR',n:13},{uf:'ES',n:12},{uf:'BA',n:9},
+    {uf:'RS',n:5},{uf:'PE',n:4},{uf:'CE',n:3},{uf:'PI',n:3},
+    {uf:'RJ',n:2},{uf:'AL',n:1},{uf:'MA',n:1},{uf:'MG',n:1},
+    {uf:'SC',n:1},{uf:'SE',n:1},{uf:'TO',n:1},
+  ]
+};
+
+const kpisFiltro = {
+  all:      {tot:'9.360',tit:'641',sal:'R$ 3.561',salSub:'mediana geral: R$ 3.000',com:'638',pct:'6,8% informam',sem:'8.722'},
+  efetivas: {tot:'2.655',tit:'~130',sal:'R$ 4.800',salSub:'média estimada vagas CLT/PJ',com:'274',pct:'~10% informam',sem:'~2.381'},
+  bolsas:   {tot:'5.479',tit:'~45',sal:'R$ 3.000',salSub:'bolsas + fomento científico',com:'144',pct:'~2,6% informam',sem:'~5.335'},
+  estagio:  {tot:'1.226',tit:'~38',sal:'~R$ 900',salSub:'faixa estágio corporativo',com:'~98',pct:'~8% informam',sem:'~1.128'},
+  ciencia:  {tot:'~290',tit:'~24',sal:'R$ 7.000',salSub:'Tabela 2 · Relatório Grupo 8',com:'~18',pct:'alta opacidade',sem:'~272'},
+};
+
+/* ── HELPERS ── */
+const COLORS = ['#4d9fff','#00e5a0','#ff7b39','#b06eff','#ffc542','#f472b6','#22d3ee','#a3e635'];
+const fR = v => 'R$ ' + Math.round(v).toLocaleString('pt-BR');
+const fN = v => Math.round(v).toLocaleString('pt-BR');
+const tipCfg = {
+  backgroundColor:'rgba(12,12,22,.95)',
+  borderColor:'rgba(77,159,255,.3)',borderWidth:1,
+  titleColor:'#f0f0fc',bodyColor:'#9898b8',
+  padding:12,cornerRadius:12,
+  bodyFont:{family:'Space Grotesk',size:13},
+  titleFont:{family:'Space Grotesk',size:13,weight:'600'},
+};
+
+/* ── CHART: EVOLUÇÃO TEMPORAL ── */
+new Chart(document.getElementById('cEvol'),{
+  type:'line',
+  data:{
+    labels:D.evol.labels,
+    datasets:[{
+      label:'Vagas com data identificada',
+      data:D.evol.vals,
+      borderColor:'#00e5a0',
+      backgroundColor:'rgba(0,229,160,.04)',
+      borderWidth:2.5,
+      pointBackgroundColor:'#00e5a0',
+      pointBorderColor:'#050508',
+      pointBorderWidth:2,
+      pointRadius:5,pointHoverRadius:8,
+      tension:.25,fill:true,
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{
+      legend:{display:false},
+      tooltip:{...tipCfg,callbacks:{label:ctx=>' '+fN(ctx.parsed.y)+' vagas'}}
+    },
+    scales:{
+      x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#505070',font:{size:11}}},
+      y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#505070',font:{size:11},callback:v=>fN(v)}},
+    }
+  }
+});
+
+/* ── CHART: DONUT ECOSSISTEMA ── */
+new Chart(document.getElementById('cDonut'),{
+  type:'doughnut',
+  data:{
+    labels:D.donut.labels,
+    datasets:[{
+      data:D.donut.vals,
+      backgroundColor:D.donut.cores,
+      borderWidth:0,hoverOffset:14,
+      borderRadius:4,
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    cutout:'62%',
+    plugins:{
+      legend:{display:false},
+      tooltip:{...tipCfg,callbacks:{
+        label:ctx=>`${ctx.label}: ${fN(ctx.raw)} vagas (${(ctx.raw/9360*100).toFixed(1)}%)`
+      }}
+    }
+  }
+});
+
+/* ── CHART: SALÁRIO POR CARGO ── */
+new Chart(document.getElementById('cSal'),{
+  type:'bar',
+  data:{
+    labels:D.salCargo.map(r=>r.cat),
+    datasets:[{
+      data:D.salCargo.map(r=>r.media),
+      backgroundColor:D.salCargo.map((_,i)=>COLORS[i]+'bb'),
+      borderColor:D.salCargo.map((_,i)=>COLORS[i]),
+      borderWidth:1,borderRadius:10,barPercentage:.65,
+      _qtds:D.salCargo.map(r=>r.qtd),
+      _med:D.salCargo.map(r=>r.mediana),
+    }]
+  },
+  options:{
+    indexAxis:'y',responsive:true,maintainAspectRatio:false,
+    plugins:{
+      legend:{display:false},
+      tooltip:{...tipCfg,callbacks:{
+        label(ctx){
+          const q=ctx.dataset._qtds[ctx.dataIndex];
+          const m=ctx.dataset._med[ctx.dataIndex];
+          return [' Média: '+fR(ctx.parsed.x),' Mediana: '+fR(m),' Vagas declaradas: '+fN(q)];
+        }
+      }}
+    },
+    scales:{
+      x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#505070',font:{size:11},callback:v=>'R$'+Math.round(v/1000)+'k'},min:0,max:10000},
+      y:{grid:{display:false},ticks:{color:'#9898b8',font:{size:12}}}
+    }
+  }
+});
+
+/* ── TOP 3 ── */
+(function(){
+  const medals=['🥇','🥈','🥉'];
+  const cols=[COLORS[0],COLORS[1],COLORS[2]];
+  const max=D.salCargo[0].media;
+  const el=document.getElementById('top3');
+  D.salCargo.slice(0,3).forEach((r,i)=>{
+    const pct=Math.round(r.media/max*100);
+    el.innerHTML+=`<div class="t3item">
+      <span class="t3medal">${medals[i]}</span>
+      <div class="t3body">
+        <div class="t3name">${r.cat}</div>
+        <div class="t3meta">${fN(r.qtd)} vagas com salário declarado · mediana ${fR(r.mediana)}</div>
+        <div class="t3bar-bg"><div class="t3bar-fill" style="width:${pct}%;background:${cols[i]}"></div></div>
+      </div>
+      <div class="t3sal" style="color:${cols[i]}">${fR(r.media)}<span style="font-size:10px;font-weight:400;color:var(--t3)">/mês</span></div>
+    </div>`;
+  });
+})();
+
+/* ── CHART: GRUPOS (swappable) ── */
+let cGrupo=null;
+function switchGrupo(mode,btn){
+  document.querySelectorAll('.tabs .tab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  if(cGrupo) cGrupo.destroy();
+  const rows=mode==='qtd'?D.grupos.qtd:D.grupos.sal;
+  const vals=mode==='qtd'?rows.map(r=>r.qtd):rows.map(r=>r.sal);
+  cGrupo=new Chart(document.getElementById('cGrupo'),{
+    type:'bar',
+    data:{
+      labels:rows.map(r=>r.g),
+      datasets:[{
+        data:vals,
+        backgroundColor:rows.map((_,i)=>COLORS[i%COLORS.length]+'99'),
+        borderColor:rows.map((_,i)=>COLORS[i%COLORS.length]),
+        borderWidth:1,borderRadius:8,barPercentage:.7
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{...tipCfg,callbacks:{
+          label:ctx=>mode==='qtd'?' '+fN(ctx.parsed.y)+' vagas':' '+fR(ctx.parsed.y)
+        }}
+      },
+      scales:{
+        x:{grid:{display:false},ticks:{color:'#9898b8',font:{size:10},maxRotation:28}},
+        y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{
+          color:'#505070',font:{size:10},
+          callback:v=>mode==='qtd'?fN(v):'R$'+Math.round(v/1000)+'k'
+        }}
+      }
+    }
+  });
+  document.getElementById('ins-grupo').innerHTML=mode==='qtd'
+    ?'<b>Bolsas acadêmicas dominam (58,53%):</b> mestrado/doutorado = 33,51% e outras bolsas = 25,02%. Estágios corporativos são apenas 13,10% do ecossistema.'
+    :'<b>Especialista R$9.150</b> vs Estágio ~R$900. Cientista de Dados (R$7k) paga quase 2× mais que Analista (R$3.561) — mas tem 6,3× menos vagas.';
+}
+switchGrupo('qtd',document.querySelector('.tabs .tab'));
+
+/* ── HISTOGRAMA SALARIAL ── */
+(function(){
+  const wrap=document.getElementById('hist-wrap');
+  const max=Math.max(...D.hist.map(r=>r.n));
+  D.hist.forEach(r=>{
+    const pct=Math.round(r.n/max*100);
+    wrap.innerHTML+=`<div class="hist-bar-row">
+      <span class="hist-lbl">${r.f}</span>
+      <div class="hist-track">
+        <div class="hist-fill" style="width:${pct}%;background:${r.c};min-width:${r.n>0?18:0}px">
+          ${r.n>10?fN(r.n):''}
+        </div>
+      </div>
+      <span class="hist-n">${r.n}</span>
+    </div>`;
+  });
+})();
+
+/* ── CHART: SENIORIDADE × SALÁRIO ── */
+new Chart(document.getElementById('cNivel'),{
+  type:'bar',
+  data:{
+    labels:D.nivel.map(r=>r.n),
+    datasets:[{
+      data:D.nivel.map(r=>r.s),
+      backgroundColor:['#505070cc','#9898b8cc','#4d9fffcc','#00e5a0cc','#ffc542cc'],
+      borderColor:['#505070','#9898b8','#4d9fff','#00e5a0','#ffc542'],
+      borderWidth:1,borderRadius:10,barPercentage:.7
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{
+      legend:{display:false},
+      tooltip:{...tipCfg,callbacks:{label:ctx=>' '+fR(ctx.parsed.y)}}
+    },
+    scales:{
+      x:{grid:{display:false},ticks:{color:'#9898b8',font:{size:10},maxRotation:24}},
+      y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#505070',font:{size:10},callback:v=>'R$'+Math.round(v/1000)+'k'}}
+    }
+  }
+});
+
+/* ── PROGRESS BARS ── */
+(function(){
+  const wrap=document.getElementById('prog-wrap');
+  const max=Math.max(...D.progress.map(v=>v.vagas));
+  D.progress.forEach(v=>{
+    const w=(v.vagas/max*100).toFixed(1);
+    wrap.innerHTML+=`<div class="prog-row">
+      <div class="prog-meta">
+        <span class="name">${v.tipo}</span>
+        <span class="nums">${fN(v.vagas)} vagas · ${v.pct}%</span>
+      </div>
+      <div class="prog-bg">
+        <div class="prog-fill" style="background:${v.cor}" data-w="${w}%"></div>
+      </div>
+    </div>`;
+  });
+  setTimeout(()=>document.querySelectorAll('.prog-fill').forEach(b=>b.style.width=b.dataset.w),300);
+})();
+
+/* ── FILTRO GLOBAL (KPIs) ── */
+function applyFilter(f,btn){
+  document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  const s=kpisFiltro[f]||kpisFiltro.all;
+  document.getElementById('k-total').textContent=s.tot;
+  document.getElementById('k-titulos').textContent=s.tit;
+  document.getElementById('k-sal').textContent=s.sal;
+  document.getElementById('k-sal-sub').textContent=s.salSub;
+  document.getElementById('k-com').textContent=s.com;
+  document.getElementById('k-pct').textContent=s.pct;
+  document.getElementById('k-sem').textContent=s.sem;
+}
+
+/* ── RANKING DE ESTADOS ── */
+(function(){
+  const el=document.getElementById('estado-list');
+  const tot=D.estados.reduce((a,b)=>a+b.n,0);
+  D.estados.forEach((e,i)=>{
+    const pct=(e.n/tot*100).toFixed(1);
+    const c=COLORS[i%COLORS.length];
+    el.innerHTML+=`<div class="estado-bar">
+      <span class="estado-lbl" style="color:${c}">${e.uf}</span>
+      <div class="estado-track"><div class="estado-fill" style="width:${pct}%;background:${c}"></div></div>
+      <span class="estado-num">${fN(e.n)}</span>
+      <span class="estado-pct">${pct}%</span>
+    </div>`;
+  });
+})();
+
+/* ── MAPA D3 ── */
+(function(){
+  const ufData={};
+  D.estados.forEach(e=>ufData[e.uf]=e.n);
+  const maxN=Math.max(...D.estados.map(e=>e.n));
+  const ufCode={
+    'Acre':'AC','Alagoas':'AL','Amapá':'AP','Amazonas':'AM','Bahia':'BA',
+    'Ceará':'CE','Distrito Federal':'DF','Espírito Santo':'ES','Goiás':'GO',
+    'Maranhão':'MA','Mato Grosso':'MT','Mato Grosso do Sul':'MS',
+    'Minas Gerais':'MG','Pará':'PA','Paraíba':'PB','Paraná':'PR',
+    'Pernambuco':'PE','Piauí':'PI','Rio de Janeiro':'RJ',
+    'Rio Grande do Norte':'RN','Rio Grande do Sul':'RS','Rondônia':'RO',
+    'Roraima':'RR','Santa Catarina':'SC','São Paulo':'SP',
+    'Sergipe':'SE','Tocantins':'TO',
+  };
+  function stateColor(uf){
+    const n=ufData[uf]||0;
+    if(!n) return '#161625';
+    const t=Math.pow(n/maxN,.35);
+    return d3.interpolate('#1e3a6e','#4d9fff')(t);
+  }
+  const svg=d3.select('#map-svg');
+  const tt=document.getElementById('mtt');
+  const mapInfo=document.getElementById('map-info');
+  const wrap=document.querySelector('.map-wrap');
+  const proj=d3.geoMercator().center([-54,-15]).scale(680).translate([250,280]);
+  const path=d3.geoPath(proj);
+
+  d3.json('https://cdn.jsdelivr.net/npm/datamaps@0.5.10/src/js/data/bra.topo.json').then(bra=>{
+    svg.selectAll('*').remove();
+    const key=Object.keys(bra.objects)[0];
+    const features=topojson.feature(bra,bra.objects[key]).features;
+    proj.fitSize([500,520],{type:'FeatureCollection',features});
+    svg.selectAll('path.state').data(features).join('path')
+      .attr('class','state').attr('d',path)
+      .attr('fill',d=>{const n=d.properties.name||d.properties.NAME||'';return stateColor(ufCode[n]||'')})
+      .attr('stroke','rgba(255,255,255,.1)').attr('stroke-width',.6)
+      .style('cursor','pointer').style('transition','fill .2s')
+      .on('mouseenter',function(event,d){
+        const nome=d.properties.name||d.properties.NAME||'';
+        const uf=ufCode[nome]||nome;
+        const n=ufData[uf]||0;
+        d3.select(this).attr('fill',n?'#7dc3ff':'#202038');
+        tt.style.display='block';
+        tt.innerHTML=`<b>${nome} (${uf})</b><span>${fN(n)} vaga${n!==1?'s':''}</span>`;
+        mapInfo.textContent=`${nome}: ${fN(n)} vagas (${uf})`;
+      })
+      .on('mousemove',function(event){
+        const r=wrap.getBoundingClientRect();
+        tt.style.left=(event.clientX-r.left+12)+'px';
+        tt.style.top=(event.clientY-r.top+12)+'px';
+      })
+      .on('mouseleave',function(event,d){
+        const nome=d.properties.name||d.properties.NAME||'';
+        d3.select(this).attr('fill',stateColor(ufCode[nome]||''));
+        tt.style.display='none';
+        mapInfo.textContent='Passe o mouse sobre o mapa';
+      });
+    svg.selectAll('text.uf')
+      .data(features.filter(d=>{const n=d.properties.name||d.properties.NAME||'';return ufData[ufCode[n]||'']>0}))
+      .join('text').attr('class','uf')
+      .attr('transform',d=>`translate(${path.centroid(d)})`)
+      .attr('text-anchor','middle').attr('dominant-baseline','central')
+      .attr('fill',d=>{const n=d.properties.name||d.properties.NAME||'';return (ufData[ufCode[n]||'']||0)>50?'#fff':'#aac8f0'})
+      .attr('font-size',d=>{const n=d.properties.name||d.properties.NAME||'';return (ufData[ufCode[n]||'']||0)>100?9:7})
+      .attr('font-family','DM Mono,monospace').attr('font-weight','600').attr('pointer-events','none')
+      .text(d=>{const n=d.properties.name||d.properties.NAME||'';return ufCode[n]||''});
+    const defs=svg.append('defs');
+    const grad=defs.append('linearGradient').attr('id','mapGrad').attr('x1','0%').attr('x2','100%');
+    grad.append('stop').attr('offset','0%').attr('stop-color','#161625');
+    grad.append('stop').attr('offset','100%').attr('stop-color','#4d9fff');
+    svg.append('rect').attr('x',10).attr('y',513).attr('width',120).attr('height',6).attr('rx',3).attr('fill','url(#mapGrad)');
+    svg.append('text').attr('x',10).attr('y',530).attr('fill','#505070').attr('font-size',8).attr('font-family','DM Mono,monospace').text('0 vagas');
+    svg.append('text').attr('x',130).attr('y',530).attr('fill','#4d9fff').attr('font-size',8).attr('font-family','DM Mono,monospace').attr('text-anchor','end').text('675 vagas');
+  }).catch(()=>{
+    svg.selectAll('*').remove();
+    svg.append('rect').attr('width',500).attr('height',560).attr('fill','#131320').attr('rx',8);
+    svg.append('text').attr('x',250).attr('y',265).attr('text-anchor','middle').attr('fill','#505070').attr('font-size',13).attr('font-family','Space Grotesk,sans-serif').text('Geometria do mapa indisponível');
+    svg.append('text').attr('x',250).attr('y',285).attr('text-anchor','middle').attr('fill','#505070').attr('font-size',11).text('Veja o ranking ao lado →');
+  });
+})();
+</script>
+</body>
+</html>
