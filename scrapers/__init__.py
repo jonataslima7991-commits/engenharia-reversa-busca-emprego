@@ -1,0 +1,1 @@
+# Pacote de scrapers — cada módulo implementa um site diferente

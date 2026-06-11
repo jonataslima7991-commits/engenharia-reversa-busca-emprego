@@ -1,22 +1,28 @@
-# 🔍 Engenharia Reversa da Busca de Emprego
+# Engenharia Reversa da Busca de Emprego
 
-> Uma análise quantitativa do mercado de trabalho em Ciência de Dados no Brasil — desmascarando vagas, bolsas e assimetrias de informação.
+> Uma análise quantitativa do mercado de trabalho em Ciência de Dados no Brasil —
+> desmascarando vagas, bolsas e assimetrias de informação.
 
-Projeto desenvolvido para a **2ª Amostra Acadêmica da Faculdade de Tecnologia de Santana de Parnaíba (Fatec)**, curso de Ciência de Dados.
+Projeto desenvolvido para a **2ª Amostra Acadêmica da Fatec Santana de Parnaíba**,
+curso de Ciência de Dados.
 
 **Autores:** Jonatas Oliveira de Lima e Guilherme Soares Santos
 
 ---
 
-## 📌 Sobre o Projeto
+## Sobre o Projeto
 
-O mercado de trabalho em Ciência de Dados no Brasil é marcado por uma profunda **opacidade estrutural**: cargos que exigem habilidades analíticas avançadas são frequentemente anunciados sob títulos genéricos, e a forma como o candidato pesquisa determina drasticamente as oportunidades que aparecem para ele.
+O mercado de trabalho em Ciência de Dados no Brasil é marcado por uma profunda
+**opacidade estrutural**: cargos analíticos são anunciados sob títulos genéricos e
+a forma como o candidato pesquisa determina as oportunidades que aparecem para ele.
 
-Este projeto aplica **engenharia reversa** sobre o banco de dados de vagas da plataforma [Adzuna.com.br](https://www.adzuna.com.br) — maior agregador de vagas do mundo — para mapear quantitativamente o mercado de dados brasileiro, separar ruídos (bolsas acadêmicas) das oportunidades reais e revelar os padrões de remuneração por cargo.
+Este projeto aplica **engenharia reversa** sobre plataformas de vagas brasileiras para
+mapear quantitativamente o mercado de dados, separar bolsas acadêmicas das oportunidades
+reais e revelar padrões de remuneração por cargo.
 
 ---
 
-## 🔑 Principais Descobertas
+## Principais Descobertas (base: 9.360 vagas · Adzuna · Mar/2026)
 
 | Categoria | Qtd. | % |
 |---|---|---|
@@ -25,11 +31,11 @@ Este projeto aplica **engenharia reversa** sobre o banco de dados de vagas da pl
 | Bolsas de Pesquisa | 2.342 | 25,02% |
 | Estágios Corporativos | 1.226 | 13,10% |
 
-- 🔎 Buscar por **"Dados"** abre **6,3x mais portas** no mercado corporativo do que buscar por "Cientista de Dados"
-- 💰 **93,2% das vagas** não divulgam remuneração — confirmando a assimetria de informação de Akerlof (1970)
-- 🎓 Bolsas de Mestrado/Doutorado/Pesquisa correspondem a **58,53%** do total de vagas encontradas sob o termo "Dados"
+- Buscar por **"Dados"** abre **6,3× mais portas** do que buscar por "Cientista de Dados"
+- **93,2% das vagas** não divulgam remuneração (assimetria de informação — Akerlof, 1970)
+- Bolsas acadêmicas correspondem a **58,53%** do total
 
-### Remuneração Média por Cargo (vagas com salário exposto)
+### Remuneração média por cargo (vagas com salário declarado)
 
 | Cargo | Salário Médio |
 |---|---|
@@ -40,101 +46,213 @@ Este projeto aplica **engenharia reversa** sobre o banco de dados de vagas da pl
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
-
-- **Python** — linguagem principal
-- **Selenium + undetected_chromedriver** — web scraping com simulação de navegação humana
-- **Pandas** — limpeza, transformação e análise exploratória dos dados
-- **Expressões Regulares (re)** — categorização e extração de salários
-- **Power BI** — dashboard interativo final
-- **HTML + JavaScript** — dashboard de validação gerado via IA
-
----
-
-## 🔄 Pipeline do Projeto
+## Estrutura do Projeto
 
 ```
-Coleta (Selenium) → CSV bruto → Limpeza (Pandas) → Categorização (Regex) → Análise → Dashboard (Power BI)
-```
-
-**Metodologia:** [CRISP-DM](https://en.wikipedia.org/wiki/Cross-industry_standard_process_for_data_mining) — Cross-Industry Standard Process for Data Mining
-
-1. **Entendimento do Negócio** — mapeamento do problema de mascaramento de vagas
-2. **Coleta de Dados** — scraping automatizado da Adzuna (centenas de páginas)
-3. **Preparação dos Dados** — remoção de duplicatas, normalização, categorização
-4. **Análise e Visualização** — frequências, médias salariais, dashboard interativo
-
----
-
-## 📁 Estrutura do Repositório
-
-```
-📦 engenharia-reversa-busca-emprego
- ┣ 📄 scraper.py               # Script de coleta com Selenium
- ┣ 📄 analise.py               # Limpeza e análise com Pandas
- ┣ 📄 dashboard.html           # Dashboard interativo em HTML
- ┣ 📊 dados/
- ┃ ┗ 📄 vagas_raw.csv          # Base de dados coletada
- ┣ 📄 requirements.txt         # Dependências do projeto
- ┗ 📄 README.md
+Amostra Acadêmica/
+│
+├── scrapers/                  # Pacote de coletores (um por site)
+│   ├── __init__.py
+│   ├── base.py                # ScraperBase: lógica comum, anti-detecção, retry
+│   ├── adzuna.py              # ScraperAdzuna
+│   └── gupy.py                # ScraperGupy
+│
+├── main.py                    # Ponto de entrada — roda um ou todos os scrapers
+├── gerar_dashboard.py         # Lê os CSVs e gera os JSONs para os dashboards
+│
+├── index.html                 # Dashboard de análise (TCC)
+├── oportunidades.html         # Feed semanal de vagas com filtros
+│
+├── analise_vagas.ipynb        # Notebook de limpeza e análise exploratória
+│
+├── executar_coleta.bat        # Pipeline completo: coleta + dashboard (agendável)
+├── agendar_coleta.ps1         # Registra a tarefa no Windows Task Scheduler
+│
+├── vagas_adzuna.csv           # Dados coletados — Adzuna
+├── vagas_gupy.csv             # Dados coletados — Gupy
+├── live_data.json             # Gerado automaticamente — alimenta index.html
+├── oportunidades_data.json    # Gerado automaticamente — alimenta oportunidades.html
+│
+└── logs/                      # Log de cada execução agendada
+    └── coleta_YYYY-MM-DD.log
 ```
 
 ---
 
-## ▶️ Como Executar
-
-### Pré-requisitos
+## Pré-requisitos
 
 - Python 3.10+
 - Google Chrome instalado
-- Instalar as dependências:
+- Dependências Python:
 
 ```bash
-pip install -r requirements.txt
+pip install selenium undetected-chromedriver pandas
 ```
 
-### Executar o scraper
+---
+
+## Como Usar
+
+### 1. Coletar vagas
 
 ```bash
-python scraper.py
+# Coleta todos os sites configurados (Adzuna + Gupy)
+python main.py
+
+# Coleta apenas um site
+python main.py adzuna
+python main.py gupy
 ```
 
-### Executar a análise
+O Chrome abre automaticamente. Se interromper com `Ctrl+C`, o progresso é salvo
+em `checkpoint_<site>.json` e a coleta retoma do mesmo ponto na próxima execução.
+
+---
+
+### 2. Gerar os dashboards
 
 ```bash
-python analise.py
+python gerar_dashboard.py
+```
+
+Lê os CSVs, categoriza as vagas e gera:
+- `live_data.json` → atualiza KPIs e gráficos do `index.html`
+- `oportunidades_data.json` → alimenta o `oportunidades.html`
+
+---
+
+### 3. Visualizar
+
+Abra os arquivos no navegador:
+
+| Arquivo | Conteúdo |
+|---|---|
+| `index.html` | Análise completa: KPIs, gráficos, mapa, salários |
+| `oportunidades.html` | Vagas da última semana com busca e filtros por categoria/fonte |
+
+---
+
+### 4. Automação semanal
+
+A coleta já está agendada para rodar toda **segunda-feira às 09:00** via
+Windows Task Scheduler.
+
+**Para forçar uma execução manual agora:**
+
+```powershell
+Start-ScheduledTask -TaskName "ColetaVagasDados"
+```
+
+**Para reconfigurar dia/hora**, edite as linhas `-DaysOfWeek` e `-At` no
+`agendar_coleta.ps1` e rode:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File agendar_coleta.ps1
+```
+
+**Para verificar logs:**
+
+```
+logs/coleta_YYYY-MM-DD.log
 ```
 
 ---
 
-## 📦 Dependências
+### 5. Adicionar um novo site
+
+1. Crie `scrapers/novosite.py` herdando `ScraperBase`
+2. Implemente os três métodos obrigatórios:
+
+```python
+from scrapers.base import ScraperBase
+
+class ScraperNovoSite(ScraperBase):
+
+    def __init__(self):
+        super().__init__(nome_site="novosite")
+
+    def construir_url(self, pagina: int) -> str:
+        return f"https://novosite.com.br/vagas?q=dados&page={pagina}"
+
+    def _aguardar_carregamento(self):
+        # espera o elemento certo carregar
+        ...
+
+    def extrair_vagas_da_pagina(self) -> list[dict]:
+        # retorna [{"Titulo": "...", "Link": "..."}, ...]
+        ...
+```
+
+3. Adicione duas linhas no `main.py`:
+
+```python
+from scrapers.novosite import ScraperNovoSite
+
+SCRAPERS = {
+    "adzuna":   ScraperAdzuna,
+    "gupy":     ScraperGupy,
+    "novosite": ScraperNovoSite,   # ← nova linha
+}
+```
+
+---
+
+## Fluxo Completo
 
 ```
-selenium
-undetected-chromedriver
-pandas
+python main.py
+      ↓  coleta vagas (Chrome automatizado)
+      ↓  salva vagas_<site>.csv
+      ↓
+python gerar_dashboard.py
+      ↓  lê CSVs, categoriza, gera JSONs
+      ↓
+index.html / oportunidades.html
+      ↓  dashboards atualizados no navegador
 ```
 
-> Gere o `requirements.txt` com: `pip freeze > requirements.txt`
+*(Passos 1 e 2 acontecem automaticamente toda segunda-feira via Task Scheduler)*
 
 ---
 
-## 🌱 Alinhamento ao ODS 08
+## Recursos Anti-Detecção
 
-Este projeto contribui para o **Objetivo de Desenvolvimento Sustentável 08 da ONU** (Trabalho Decente e Crescimento Econômico), ao democratizar o acesso à informação sobre o mercado de trabalho, reduzindo a assimetria de oportunidades causada pela falta de padronização nas publicações de vagas digitais.
+O `ScraperBase` implementa as seguintes proteções contra bloqueio:
+
+| Técnica | Como funciona |
+|---|---|
+| `undetected_chromedriver` | Remove flags de automação do Chrome |
+| CDP Stealth | Injeta JS para ocultar `navigator.webdriver` |
+| User-Agent aleatório | Sorteia entre Chrome, Firefox e Safari a cada sessão |
+| Viewport aleatória | Simula resoluções reais de desktop |
+| Scroll natural | Rola a página gradualmente antes de extrair |
+| Detecção de bloqueio | Identifica Cloudflare, CAPTCHA, 403/429 |
+| Retry com backoff | Aguarda 90–180s e tenta novamente ao detectar bloqueio |
+| Persistência de cookies | Reutiliza sessões entre execuções |
 
 ---
 
-## 🔭 Trabalhos Futuros
+## Metodologia
 
-- Automação do pipeline para monitoramento semanal
-- Expansão do scraping para LinkedIn e Gupy
-- Cruzamento geográfico com dados regionais do CAGED
-- Análise de sazonalidade por período do ano
+**CRISP-DM** (Cross-Industry Standard Process for Data Mining):
+
+1. **Entendimento do Negócio** — mapeamento do problema de mascaramento de vagas
+2. **Coleta de Dados** — scraping automatizado com Selenium
+3. **Preparação dos Dados** — remoção de duplicatas, normalização, categorização por regex
+4. **Análise e Visualização** — frequências, médias salariais, dashboards interativos
 
 ---
 
-## 📚 Referências
+## Alinhamento ao ODS 08
+
+Este projeto contribui para o **ODS 08 da ONU** (Trabalho Decente e Crescimento
+Econômico) ao democratizar o acesso à informação sobre o mercado de trabalho,
+reduzindo a assimetria de oportunidades gerada pela falta de padronização nas
+publicações de vagas digitais.
+
+---
+
+## Referências
 
 - Akerlof, G. A. (1970). The Market for "Lemons". *The Quarterly Journal of Economics*, 84(3).
 - Brasscom (2025). *Relatório de Perspectivas do Mercado de Trabalho do Macrossetor TIC 2025*.
@@ -145,7 +263,7 @@ Este projeto contribui para o **Objetivo de Desenvolvimento Sustentável 08 da O
 
 ---
 
-## 👥 Autores
+## Autores
 
 | Nome | Contato |
 |---|---|

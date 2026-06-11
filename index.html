@@ -763,6 +763,57 @@ new Chart(document.getElementById('cNivel'),{
   setTimeout(()=>document.querySelectorAll('.prog-fill').forEach(b=>b.style.width=b.dataset.w),300);
 })();
 
+/* ── DADOS AO VIVO — atualiza KPIs e evolução a partir de live_data.json ──
+   Se o arquivo não existir ou a fetch falhar, os dados hardcoded acima
+   continuam sendo usados normalmente (fallback seguro para apresentação). */
+fetch('live_data.json')
+  .then(r => { if(!r.ok) throw new Error('sem live_data'); return r.json(); })
+  .then(live => {
+    // KPIs
+    if(live.total)   document.getElementById('k-total').textContent   = live.total.toLocaleString('pt-BR');
+    if(live.titulos) document.getElementById('k-titulos').textContent = live.titulos.toLocaleString('pt-BR');
+
+    // Pill de contagem no header
+    const pill = document.querySelector('.hd-pill');
+    if(pill && live.total) pill.textContent = live.total.toLocaleString('pt-BR') + ' vagas coletadas';
+
+    // Badge "Atualizado em" no header
+    const tags = document.querySelectorAll('.hd-tag');
+    if(tags[0] && live.atualizado_em)
+      tags[0].textContent = 'Atualizado: ' + live.atualizado_em;
+
+    // Gráfico de evolução — reconstrói com dados reais
+    if(live.evolucao && Object.keys(live.evolucao).length > 0){
+      const evolLabels = Object.keys(live.evolucao);
+      const evolVals   = Object.values(live.evolucao);
+      const evolChart  = Chart.getChart('cEvol');
+      if(evolChart){
+        evolChart.data.labels                 = evolLabels;
+        evolChart.data.datasets[0].data       = evolVals;
+        evolChart.options.plugins.subtitle    = {display:true,text:'Dados ao vivo · live_data.json',color:'#505070',font:{size:10}};
+        evolChart.update();
+      }
+    }
+
+    // Donut — reconstrói com categorias reais
+    if(live.categorias && Object.keys(live.categorias).length > 0){
+      const cats  = Object.keys(live.categorias);
+      const vals  = Object.values(live.categorias);
+      const cores = ['#b06eff','#4d9fff','#ff7b39','#00e5a0','#ffc542','#f472b6'];
+      const donut = Chart.getChart('cDonut');
+      if(donut){
+        donut.data.labels                  = cats;
+        donut.data.datasets[0].data        = vals;
+        donut.data.datasets[0].backgroundColor = cores.slice(0, cats.length);
+        donut.update();
+        // Atualiza centro do donut
+        const centro = document.querySelector('.donut-center .val');
+        if(centro) centro.textContent = live.total.toLocaleString('pt-BR');
+      }
+    }
+  })
+  .catch(() => { /* sem live_data.json — dados hardcoded seguem normais */ });
+
 /* ── FILTRO GLOBAL (KPIs) ── */
 function applyFilter(f,btn){
   document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('on'));

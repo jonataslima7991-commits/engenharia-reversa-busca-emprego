@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Runtime do scraper (gerados automaticamente, não versionados)
+checkpoint_*.json
+cookies_*.pkl
+logs/
+
+# Gerados pelo gerar_dashboard.py
+live_data.json
+oportunidades_data.json

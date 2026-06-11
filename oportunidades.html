@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oportunidades da Semana · Mercado de Dados Brasil</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg0:#050508;--bg2:rgba(18,18,28,0.78);
+  --a1:#4d9fff;--a2:#00e5a0;--a3:#ff7b39;--a4:#b06eff;--a5:#ffc542;
+  --t1:#f0f0fc;--t2:#9898b8;--t3:#505070;
+  --bd:rgba(77,159,255,0.15);--bd2:rgba(77,159,255,0.45);
+  --r:20px;
+}
+html{scroll-behavior:smooth}
+body{
+  background:radial-gradient(circle at 20% 20%,#0b0b14,#050508);
+  font-family:'Space Grotesk',sans-serif;
+  color:var(--t1);min-height:100vh;font-size:15px;
+}
+body::before{
+  content:"";position:fixed;inset:0;
+  background-image:linear-gradient(#ffffff05 1px,transparent 1px),linear-gradient(90deg,#ffffff05 1px,transparent 1px);
+  background-size:52px 52px;pointer-events:none;z-index:0;
+}
+.z1{position:relative;z-index:1}
+.wrap{max-width:1200px;margin:0 auto;padding:36px 28px;display:flex;flex-direction:column;gap:24px}
+
+/* header */
+.hd{border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:24px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px}
+.badge{display:inline-flex;align-items:center;gap:7px;background:rgba(0,229,160,.08);border:1px solid rgba(0,229,160,.2);border-radius:99px;padding:4px 14px;font-size:11px;font-family:'DM Mono',monospace;color:var(--a2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--a2);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+h1{font-size:clamp(22px,3vw,38px);font-weight:700;letter-spacing:-.02em;background:linear-gradient(135deg,#fff 30%,#b0c8ff 70%,#c8a0ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{font-size:13px;color:var(--t2);margin-top:6px;line-height:1.5}
+.nav-link{font-size:12px;font-family:'DM Mono',monospace;color:var(--t3);border:1px solid var(--bd);border-radius:99px;padding:5px 14px;text-decoration:none;transition:all .2s;white-space:nowrap}
+.nav-link:hover{border-color:var(--bd2);color:var(--a1)}
+
+/* stats bar */
+.stats{display:flex;gap:20px;flex-wrap:wrap}
+.stat{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:14px 20px;min-width:130px}
+.stat-n{font-size:26px;font-weight:700;background:linear-gradient(135deg,#fff,#9bb4ff);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1}
+.stat-l{font-size:10px;font-family:'DM Mono',monospace;color:var(--t3);text-transform:uppercase;letter-spacing:.07em;margin-top:5px}
+
+/* filtros */
+.filtros{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.fl{font-size:10px;font-family:'DM Mono',monospace;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;margin-right:4px}
+.fbtn{border:1px solid rgba(255,255,255,.1);background:rgba(18,18,28,.85);color:var(--t3);border-radius:99px;padding:6px 16px;font-size:12px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-weight:500;transition:all .2s}
+.fbtn:hover{border-color:rgba(255,255,255,.2);color:var(--t2)}
+.fbtn.on{background:rgba(77,159,255,.16);border-color:var(--a1);color:var(--a1)}
+
+/* busca */
+.search-row{display:flex;gap:10px;align-items:center}
+.search{flex:1;max-width:380px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:99px;padding:8px 18px;color:var(--t1);font-size:13px;font-family:'Space Grotesk',sans-serif;outline:none;transition:border-color .2s}
+.search:focus{border-color:rgba(77,159,255,.5)}
+.search::placeholder{color:var(--t3)}
+
+/* grid de cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px}
+.card{
+  background:var(--bg2);backdrop-filter:blur(12px);
+  border:1px solid var(--bd);border-radius:var(--r);
+  padding:18px 20px;display:flex;flex-direction:column;gap:10px;
+  transition:border-color .25s,transform .25s,box-shadow .25s;
+}
+.card:hover{border-color:var(--bd2);transform:translateY(-2px);box-shadow:0 18px 36px -8px rgba(0,0,0,.5)}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.card-titulo{font-size:14px;font-weight:600;color:var(--t1);line-height:1.4;flex:1}
+.tag{font-size:10px;font-family:'DM Mono',monospace;border-radius:99px;padding:3px 10px;white-space:nowrap;flex-shrink:0}
+.tag-adzuna{background:rgba(77,159,255,.12);color:var(--a1);border:1px solid rgba(77,159,255,.25)}
+.tag-gupy  {background:rgba(0,229,160,.12);color:var(--a2);border:1px solid rgba(0,229,160,.25)}
+.tag-outro {background:rgba(176,110,255,.12);color:var(--a4);border:1px solid rgba(176,110,255,.25)}
+.card-meta{display:flex;gap:8px;flex-wrap:wrap}
+.chip{font-size:11px;font-family:'DM Mono',monospace;color:var(--t3);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:99px;padding:2px 10px}
+.chip.cat{color:var(--a5)}
+.card-link{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:12px;font-family:'DM Mono',monospace;
+  color:var(--a1);text-decoration:none;
+  border:1px solid rgba(77,159,255,.2);border-radius:99px;
+  padding:5px 14px;width:fit-content;
+  transition:background .2s,border-color .2s;
+}
+.card-link:hover{background:rgba(77,159,255,.12);border-color:rgba(77,159,255,.45)}
+
+/* empty state */
+.empty{text-align:center;padding:80px 20px;color:var(--t3);font-family:'DM Mono',monospace;font-size:13px}
+
+/* footer */
+.ft{border-top:1px solid rgba(255,255,255,.07);padding-top:18px;font-size:11px;color:var(--t3);font-family:'DM Mono',monospace;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+
+/* loading */
+.loading{text-align:center;padding:60px;color:var(--t3);font-family:'DM Mono',monospace;font-size:12px}
+
+@media(max-width:600px){.wrap{padding:20px 14px}.grid{grid-template-columns:1fr}.stats{gap:10px}}
+</style>
+</head>
+<body>
+<div class="z1 wrap">
+
+  <!-- HEADER -->
+  <header class="hd">
+    <div>
+      <div class="badge"><span class="dot"></span>Feed ao vivo · Última semana</div>
+      <h1>Oportunidades da Semana</h1>
+      <p class="sub" id="sub-text">Vagas de dados coletadas automaticamente · Adzuna &amp; Gupy</p>
+    </div>
+    <a href="index.html" class="nav-link">← Voltar ao Dashboard</a>
+  </header>
+
+  <!-- STATS -->
+  <div class="stats" id="stats">
+    <div class="stat"><div class="stat-n" id="s-total">—</div><div class="stat-l">Vagas esta semana</div></div>
+    <div class="stat"><div class="stat-n" id="s-adzuna">—</div><div class="stat-l">Adzuna</div></div>
+    <div class="stat"><div class="stat-n" id="s-gupy">—</div><div class="stat-l">Gupy</div></div>
+    <div class="stat"><div class="stat-n" id="s-data">—</div><div class="stat-l">Atualizado em</div></div>
+  </div>
+
+  <!-- BUSCA E FILTROS -->
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div class="search-row">
+      <input class="search" type="text" id="busca" placeholder="Buscar por título..." oninput="filtrar()">
+    </div>
+    <div class="filtros">
+      <span class="fl">Categoria:</span>
+      <button class="fbtn on" onclick="setCategoria('',this)">Todas</button>
+      <button class="fbtn" onclick="setCategoria('Técnico (sem nível)',this)">Técnico</button>
+      <button class="fbtn" onclick="setCategoria('Sênior',this)">Sênior</button>
+      <button class="fbtn" onclick="setCategoria('Pleno',this)">Pleno</button>
+      <button class="fbtn" onclick="setCategoria('Júnior',this)">Júnior</button>
+      <button class="fbtn" onclick="setCategoria('Estágio / Trainee',this)">Estágio</button>
+      <button class="fbtn" onclick="setCategoria('Liderança',this)">Liderança</button>
+      <button class="fbtn" onclick="setCategoria('Bolsa de Pesquisa',this)">Bolsa</button>
+    </div>
+    <div class="filtros">
+      <span class="fl">Fonte:</span>
+      <button class="fbtn on" onclick="setFonte('',this)">Todas</button>
+      <button class="fbtn" onclick="setFonte('adzuna',this)">Adzuna</button>
+      <button class="fbtn" onclick="setFonte('gupy',this)">Gupy</button>
+    </div>
+  </div>
+
+  <!-- GRID DE VAGAS -->
+  <div class="loading" id="loading">Carregando vagas...</div>
+  <div class="grid" id="grid" style="display:none"></div>
+  <div class="empty" id="empty" style="display:none">Nenhuma vaga encontrada com esses filtros.</div>
+
+  <!-- FOOTER -->
+  <footer class="ft">
+    <span>Fatec Santana de Parnaíba · Guilherme Soares Santos &amp; Jonatas Oliveira de Lima · 2026</span>
+    <span id="ft-total"></span>
+  </footer>
+
+</div>
+
+<script>
+let todasVagas = [];
+let categoriaAtiva = '';
+let fonteAtiva = '';
+
+// ── Carregar dados ────────────────────────────────────────────────────
+fetch('oportunidades_data.json')
+  .then(r => { if(!r.ok) throw new Error('sem dados'); return r.json(); })
+  .then(data => {
+    todasVagas = data.vagas || [];
+
+    // Stats
+    document.getElementById('s-total').textContent  = data.total.toLocaleString('pt-BR');
+    document.getElementById('s-data').textContent   = data.atualizado_em || '—';
+    document.getElementById('sub-text').textContent =
+      `${data.total.toLocaleString('pt-BR')} vagas coletadas automaticamente · Adzuna & Gupy · Atualizado ${data.atualizado_em}`;
+    document.getElementById('ft-total').textContent =
+      `${data.total.toLocaleString('pt-BR')} vagas · oportunidades_data.json`;
+
+    const porFonte = vagas => vagas.reduce((acc, v) => {
+      acc[v.Fonte] = (acc[v.Fonte] || 0) + 1; return acc;
+    }, {});
+    const f = porFonte(todasVagas);
+    document.getElementById('s-adzuna').textContent = (f['adzuna'] || 0).toLocaleString('pt-BR');
+    document.getElementById('s-gupy').textContent   = (f['gupy']   || 0).toLocaleString('pt-BR');
+
+    document.getElementById('loading').style.display = 'none';
+    filtrar();
+  })
+  .catch(() => {
+    document.getElementById('loading').textContent =
+      'oportunidades_data.json não encontrado. Execute: python gerar_dashboard.py';
+  });
+
+// ── Filtros ───────────────────────────────────────────────────────────
+function setCategoria(cat, btn) {
+  categoriaAtiva = cat;
+  document.querySelectorAll('.filtros .fbtn').forEach(b => {
+    if(b.onclick && b.onclick.toString().includes('setCategoria')) b.classList.remove('on');
+  });
+  btn.classList.add('on');
+  filtrar();
+}
+
+function setFonte(fonte, btn) {
+  fonteAtiva = fonte;
+  document.querySelectorAll('.filtros .fbtn').forEach(b => {
+    if(b.onclick && b.onclick.toString().includes('setFonte')) b.classList.remove('on');
+  });
+  btn.classList.add('on');
+  filtrar();
+}
+
+function filtrar() {
+  const termo = (document.getElementById('busca').value || '').toLowerCase();
+  const resultado = todasVagas.filter(v => {
+    const okCat   = !categoriaAtiva || v.Categoria === categoriaAtiva;
+    const okFonte = !fonteAtiva     || v.Fonte     === fonteAtiva;
+    const okBusca = !termo          || v.Titulo.toLowerCase().includes(termo);
+    return okCat && okFonte && okBusca;
+  });
+  renderizar(resultado);
+}
+
+// ── Renderização dos cards ────────────────────────────────────────────
+function tagFonte(fonte) {
+  if(fonte === 'adzuna') return '<span class="tag tag-adzuna">adzuna</span>';
+  if(fonte === 'gupy')   return '<span class="tag tag-gupy">gupy</span>';
+  return '<span class="tag tag-outro">' + (fonte || '?') + '</span>';
+}
+
+function renderizar(vagas) {
+  const grid  = document.getElementById('grid');
+  const empty = document.getElementById('empty');
+
+  if(!vagas.length) {
+    grid.style.display  = 'none';
+    empty.style.display = 'block';
+    return;
+  }
+
+  grid.style.display  = '';
+  empty.style.display = 'none';
+  grid.innerHTML = vagas.map(v => `
+    <div class="card">
+      <div class="card-top">
+        <span class="card-titulo">${escHtml(v.Titulo)}</span>
+        ${tagFonte(v.Fonte)}
+      </div>
+      <div class="card-meta">
+        <span class="chip cat">${escHtml(v.Categoria)}</span>
+        <span class="chip">${escHtml(v.Data)}</span>
+      </div>
+      <a class="card-link" href="${escHtml(v.Link)}" target="_blank" rel="noopener">
+        Ver vaga →
+      </a>
+    </div>
+  `).join('');
+}
+
+function escHtml(s) {
+  return String(s || '')
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
