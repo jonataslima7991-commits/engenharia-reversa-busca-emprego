@@ -3,263 +3,655 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Oportunidades da Semana · Mercado de Dados Brasil</title>
+<title>Oportunidades em Dados Brasil · Feed Interativo</title>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
+/* ── RESET & DESIGN SYSTEM ── */
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --bg0:#050508;--bg2:rgba(18,18,28,0.78);
-  --a1:#4d9fff;--a2:#00e5a0;--a3:#ff7b39;--a4:#b06eff;--a5:#ffc542;
-  --t1:#f0f0fc;--t2:#9898b8;--t3:#505070;
-  --bd:rgba(77,159,255,0.15);--bd2:rgba(77,159,255,0.45);
+  --bg0:#030305;
+  --bg1:#0a0a10;
+  --bg2:rgba(12,12,18,0.7);
+  --bg-card:rgba(18,18,28,0.65);
+  --a1:#3b82f6;--a2:#10b981;--a3:#f97316;--a4:#8b5cf6;--a5:#eab308;--a6:#ec4899;
+  --t1:#f8fafc;--t2:#cbd5e1;--t3:#64748b;
+  --bd:rgba(255,255,255,0.08);--bd-hover:rgba(255,255,255,0.25);
   --r:20px;
 }
 html{scroll-behavior:smooth}
 body{
-  background:radial-gradient(circle at 20% 20%,#0b0b14,#050508);
+  background:radial-gradient(circle at 15% 15%,#111827,#030305 60%);
   font-family:'Space Grotesk',sans-serif;
-  color:var(--t1);min-height:100vh;font-size:15px;
+  color:var(--t1);min-height:100vh;font-size:15px;line-height:1.5;
+  overflow-x:hidden;
 }
 body::before{
   content:"";position:fixed;inset:0;
-  background-image:linear-gradient(#ffffff05 1px,transparent 1px),linear-gradient(90deg,#ffffff05 1px,transparent 1px);
-  background-size:52px 52px;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px);
+  background-size:64px 64px;pointer-events:none;z-index:0;
+}
+/* Glowing Orbs */
+body::after{
+  content:"";position:fixed;top:-20%;left:-10%;width:50vw;height:50vw;
+  background:radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%);
+  border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;
+}
+.glow-orb{
+  position:fixed;bottom:-20%;right:-10%;width:60vw;height:60vw;
+  background:radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 70%);
+  border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;
 }
 .z1{position:relative;z-index:1}
-.wrap{max-width:1200px;margin:0 auto;padding:36px 28px;display:flex;flex-direction:column;gap:24px}
+.wrap{max-width:1380px;margin:0 auto;padding:36px 28px;display:flex;flex-direction:column;gap:26px}
 
-/* header */
-.hd{border-bottom:1px solid rgba(255,255,255,.08);padding-bottom:24px;display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:16px}
-.badge{display:inline-flex;align-items:center;gap:7px;background:rgba(0,229,160,.08);border:1px solid rgba(0,229,160,.2);border-radius:99px;padding:4px 14px;font-size:11px;font-family:'DM Mono',monospace;color:var(--a2);letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeInUp{
+  from{opacity:0;transform:translateY(24px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.fade-in{animation:fadeInUp 0.6s cubic-bezier(0.16,1,0.3,1) forwards;opacity:0}
+.d-1{animation-delay:0.1s}
+.d-2{animation-delay:0.2s}
+.d-3{animation-delay:0.3s}
+.card-anim{animation:fadeInUp 0.5s cubic-bezier(0.16,1,0.3,1) forwards;opacity:0}
+
+/* ── HEADER ── */
+.hd{
+  border-bottom:1px solid rgba(255,255,255,.08);
+  padding-bottom:24px;display:flex;justify-content:space-between;
+  align-items:flex-end;flex-wrap:wrap;gap:18px;
+}
+.hd-left{max-width:700px}
+.badge{
+  display:inline-flex;align-items:center;gap:7px;
+  background:rgba(0,229,160,.08);border:1px solid rgba(0,229,160,.25);
+  border-radius:99px;padding:4px 14px;font-size:11px;
+  font-family:'DM Mono',monospace;color:var(--a2);
+  letter-spacing:.06em;text-transform:uppercase;margin-bottom:12px;
+}
 .dot{width:7px;height:7px;border-radius:50%;background:var(--a2);animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
-h1{font-size:clamp(22px,3vw,38px);font-weight:700;letter-spacing:-.02em;background:linear-gradient(135deg,#fff 30%,#b0c8ff 70%,#c8a0ff);-webkit-background-clip:text;background-clip:text;color:transparent}
-.sub{font-size:13px;color:var(--t2);margin-top:6px;line-height:1.5}
-.nav-link{font-size:12px;font-family:'DM Mono',monospace;color:var(--t3);border:1px solid var(--bd);border-radius:99px;padding:5px 14px;text-decoration:none;transition:all .2s;white-space:nowrap}
-.nav-link:hover{border-color:var(--bd2);color:var(--a1)}
-
-/* stats bar */
-.stats{display:flex;gap:20px;flex-wrap:wrap}
-.stat{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:14px 20px;min-width:130px}
-.stat-n{font-size:26px;font-weight:700;background:linear-gradient(135deg,#fff,#9bb4ff);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1}
-.stat-l{font-size:10px;font-family:'DM Mono',monospace;color:var(--t3);text-transform:uppercase;letter-spacing:.07em;margin-top:5px}
-
-/* filtros */
-.filtros{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.fl{font-size:10px;font-family:'DM Mono',monospace;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;margin-right:4px}
-.fbtn{border:1px solid rgba(255,255,255,.1);background:rgba(18,18,28,.85);color:var(--t3);border-radius:99px;padding:6px 16px;font-size:12px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-weight:500;transition:all .2s}
-.fbtn:hover{border-color:rgba(255,255,255,.2);color:var(--t2)}
-.fbtn.on{background:rgba(77,159,255,.16);border-color:var(--a1);color:var(--a1)}
-
-/* busca */
-.search-row{display:flex;gap:10px;align-items:center}
-.search{flex:1;max-width:380px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:99px;padding:8px 18px;color:var(--t1);font-size:13px;font-family:'Space Grotesk',sans-serif;outline:none;transition:border-color .2s}
-.search:focus{border-color:rgba(77,159,255,.5)}
-.search::placeholder{color:var(--t3)}
-
-/* grid de cards */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px}
-.card{
-  background:var(--bg2);backdrop-filter:blur(12px);
-  border:1px solid var(--bd);border-radius:var(--r);
-  padding:18px 20px;display:flex;flex-direction:column;gap:10px;
-  transition:border-color .25s,transform .25s,box-shadow .25s;
+h1{
+  font-size:clamp(24px,3.2vw,40px);font-weight:700;letter-spacing:-.03em;
+  background:linear-gradient(135deg,#ffffff 20%,#93c5fd 60%,#c4b5fd 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
 }
-.card:hover{border-color:var(--bd2);transform:translateY(-2px);box-shadow:0 18px 36px -8px rgba(0,0,0,.5)}
-.card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
-.card-titulo{font-size:14px;font-weight:600;color:var(--t1);line-height:1.4;flex:1}
-.tag{font-size:10px;font-family:'DM Mono',monospace;border-radius:99px;padding:3px 10px;white-space:nowrap;flex-shrink:0}
-.tag-adzuna{background:rgba(77,159,255,.12);color:var(--a1);border:1px solid rgba(77,159,255,.25)}
-.tag-gupy  {background:rgba(0,229,160,.12);color:var(--a2);border:1px solid rgba(0,229,160,.25)}
-.tag-outro {background:rgba(176,110,255,.12);color:var(--a4);border:1px solid rgba(176,110,255,.25)}
-.card-meta{display:flex;gap:8px;flex-wrap:wrap}
-.chip{font-size:11px;font-family:'DM Mono',monospace;color:var(--t3);background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:99px;padding:2px 10px}
-.chip.cat{color:var(--a5)}
-.card-link{
+.sub{font-size:14px;color:var(--t2);margin-top:6px}
+.hd-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.nav-link{
+  font-size:12px;font-family:'DM Mono',monospace;color:var(--t2);
+  border:1px solid var(--bd);border-radius:99px;padding:7px 16px;
+  text-decoration:none;transition:all .2s;background:var(--bg2);
   display:inline-flex;align-items:center;gap:6px;
-  font-size:12px;font-family:'DM Mono',monospace;
-  color:var(--a1);text-decoration:none;
-  border:1px solid rgba(77,159,255,.2);border-radius:99px;
-  padding:5px 14px;width:fit-content;
-  transition:background .2s,border-color .2s;
 }
-.card-link:hover{background:rgba(77,159,255,.12);border-color:rgba(77,159,255,.45)}
+.nav-link:hover{border-color:var(--a1);color:#fff;box-shadow:0 0 16px rgba(77,159,255,.2)}
+.btn-export{
+  background:rgba(0,229,160,.1);border:1px solid rgba(0,229,160,.3);
+  color:var(--a2);cursor:pointer;
+}
+.btn-export:hover{background:rgba(0,229,160,.2);border-color:var(--a2);color:#fff}
 
-/* empty state */
-.empty{text-align:center;padding:80px 20px;color:var(--t3);font-family:'DM Mono',monospace;font-size:13px}
+/* ── STATS BAR ── */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+.stat{
+  background:var(--bg2);border:1px solid rgba(255,255,255,.07);
+  border-radius:16px;padding:20px 22px;backdrop-filter:blur(16px);
+  transition:all .4s cubic-bezier(0.16,1,0.3,1);
+  box-shadow:0 8px 24px rgba(0,0,0,0.15);
+}
+.stat:hover{
+  border-color:rgba(255,255,255,0.2);transform:translateY(-3px);
+  box-shadow:0 16px 40px rgba(0,0,0,0.3);
+}
+.stat-n{
+  font-size:26px;font-weight:700;line-height:1;
+  background:linear-gradient(135deg,#ffffff,#60a5fa);-webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.stat-n.g{background:linear-gradient(135deg,#ffffff,#34d399);-webkit-background-clip:text;background-clip:text;color:transparent}
+.stat-n.o{background:linear-gradient(135deg,#ffffff,#fb923c);-webkit-background-clip:text;background-clip:text;color:transparent}
+.stat-n.p{background:linear-gradient(135deg,#ffffff,#a78bfa);-webkit-background-clip:text;background-clip:text;color:transparent}
+.stat-l{font-size:11px;font-family:'DM Mono',monospace;color:var(--t3);text-transform:uppercase;letter-spacing:.07em;margin-top:6px}
 
-/* footer */
-.ft{border-top:1px solid rgba(255,255,255,.07);padding-top:18px;font-size:11px;color:var(--t3);font-family:'DM Mono',monospace;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+/* ── PAINEL DE FILTROS ── */
+.filter-panel{
+  background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);
+  padding:22px;display:flex;flex-direction:column;gap:16px;
+  backdrop-filter:blur(14px);
+}
+.search-bar-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.search-wrap{flex:1;min-width:280px;position:relative}
+.search-input{
+  width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);
+  border-radius:12px;padding:12px 18px;color:var(--t1);font-size:14px;
+  font-family:'Space Grotesk',sans-serif;outline:none;transition:all .2s;
+}
+.search-input:focus{border-color:var(--a1);background:rgba(77,159,255,.05);box-shadow:0 0 16px rgba(77,159,255,.15)}
+.search-input::placeholder{color:var(--t3)}
 
-/* loading */
-.loading{text-align:center;padding:60px;color:var(--t3);font-family:'DM Mono',monospace;font-size:12px}
+.sort-select{
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);
+  border-radius:12px;padding:12px 16px;color:var(--t2);font-size:13px;
+  font-family:'Space Grotesk',sans-serif;outline:none;cursor:pointer;
+}
+.sort-select option{background:#121220;color:var(--t1)}
 
-@media(max-width:600px){.wrap{padding:20px 14px}.grid{grid-template-columns:1fr}.stats{gap:10px}}
+/* Filtros por Categorias / Pílulas */
+.filter-groups{display:flex;flex-direction:column;gap:12px}
+.filter-group{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.fg-label{font-size:11px;font-family:'DM Mono',monospace;color:var(--t3);text-transform:uppercase;min-width:90px}
+.pills{display:flex;gap:6px;flex-wrap:wrap;flex:1}
+.pill{
+  border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);
+  color:var(--t2);border-radius:99px;padding:5px 14px;font-size:12px;
+  cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:all .18s;
+}
+.pill:hover{border-color:rgba(255,255,255,.2);color:#fff}
+.pill.active{background:rgba(77,159,255,.18);border-color:var(--a1);color:var(--a1);font-weight:600}
+.pill.skill-pill.active{background:rgba(0,229,160,.16);border-color:var(--a2);color:var(--a2)}
+
+/* Status / Contador */
+.counter-row{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:12px;font-family:'DM Mono',monospace;color:var(--t3);
+  padding:4px 2px;
+}
+.counter-row b{color:var(--a1)}
+
+/* ── GRID DE VAGAS ── */
+.jobs-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));
+  gap:16px;
+}
+.card{
+  background:var(--bg-card);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid var(--bd);border-radius:18px;
+  padding:22px;display:flex;flex-direction:column;gap:14px;
+  transition:all .4s cubic-bezier(0.16,1,0.3,1);position:relative;
+  box-shadow:0 8px 32px rgba(0,0,0,0.15);
+}
+.card:hover{
+  border-color:var(--bd-hover);transform:translateY(-4px);
+  box-shadow:0 24px 48px -12px rgba(0,0,0,.8),0 0 0 1px var(--bd-hover), 0 0 20px rgba(59,130,246,0.1);
+}
+.card-header{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.card-title{font-size:16px;font-weight:600;color:var(--t1);line-height:1.35;flex:1}
+.card-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.badge-tag{
+  font-size:10px;font-family:'DM Mono',monospace;border-radius:6px;
+  padding:2px 8px;font-weight:500;white-space:nowrap;
+}
+.tag-area{background:rgba(176,110,255,.14);color:var(--a4);border:1px solid rgba(176,110,255,.3)}
+.tag-sen{background:rgba(77,159,255,.14);color:var(--a1);border:1px solid rgba(77,159,255,.3)}
+.tag-remoto{background:rgba(0,229,160,.14);color:var(--a2);border:1px solid rgba(0,229,160,.3)}
+.tag-hibrido{background:rgba(255,197,66,.14);color:var(--a5);border:1px solid rgba(255,197,66,.3)}
+.tag-presencial{background:rgba(255,123,57,.14);color:var(--a3);border:1px solid rgba(255,123,57,.3)}
+.tag-bolsa{background:rgba(244,114,182,.14);color:var(--a6);border:1px solid rgba(244,114,182,.3)}
+
+.card-meta{display:flex;flex-direction:column;gap:6px;font-size:13px;color:var(--t2)}
+.meta-item{display:flex;align-items:center;gap:6px}
+.meta-icon{font-size:12px;opacity:.7}
+
+.card-skills{display:flex;gap:5px;flex-wrap:wrap}
+.skill-chip{
+  font-size:10px;font-family:'DM Mono',monospace;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  border-radius:4px;padding:2px 7px;color:var(--t2);
+}
+
+.card-footer{
+  margin-top:auto;padding-top:12px;border-top:1px solid rgba(255,255,255,.06);
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+}
+.card-source{font-size:11px;font-family:'DM Mono',monospace;color:var(--t3)}
+.card-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:12px;font-family:'DM Mono',monospace;color:var(--a1);
+  text-decoration:none;border:1px solid rgba(77,159,255,.25);
+  border-radius:99px;padding:6px 14px;background:rgba(77,159,255,.08);
+  transition:all .2s;
+}
+.card-btn:hover{background:rgba(77,159,255,.2);border-color:var(--a1);color:#fff}
+
+/* ── PAGINAÇÃO ── */
+.pagination{
+  display:flex;justify-content:center;align-items:center;gap:8px;
+  margin-top:20px;flex-wrap:wrap;
+}
+.page-btn{
+  background:var(--bg2);border:1px solid rgba(255,255,255,.1);
+  color:var(--t2);padding:8px 14px;border-radius:8px;font-size:13px;
+  cursor:pointer;font-family:'DM Mono',monospace;transition:all .18s;
+}
+.page-btn:hover:not(:disabled){border-color:var(--a1);color:#fff}
+.page-btn.active{background:var(--a1);border-color:var(--a1);color:#06060c;font-weight:700}
+.page-btn:disabled{opacity:.3;cursor:not-allowed}
+
+/* ── EMPTY & LOADING STATES ── */
+.state-box{
+  text-align:center;padding:70px 20px;background:var(--bg2);
+  border:1px solid var(--bd);border-radius:var(--r);
+  color:var(--t2);font-family:'DM Mono',monospace;
+}
+.state-box h3{color:var(--t1);font-family:'Space Grotesk',sans-serif;margin-bottom:8px;font-size:18px}
+
+@media(max-width:768px){
+  .wrap{padding:20px 14px}
+  .jobs-grid{grid-template-columns:1fr}
+  .stats{grid-template-columns:1fr 1fr}
+}
 </style>
 </head>
 <body>
+<div class="glow-orb"></div>
 <div class="z1 wrap">
 
-  <!-- HEADER -->
-  <header class="hd">
-    <div>
-      <div class="badge"><span class="dot"></span>Feed ao vivo · Última semana</div>
-      <h1>Oportunidades da Semana</h1>
-      <p class="sub" id="sub-text">Vagas de dados coletadas automaticamente · Adzuna &amp; Gupy</p>
+  <!-- ── HEADER ── -->
+  <header class="hd fade-in">
+    <div class="hd-left">
+      <div class="badge"><span class="dot"></span>Feed Atualizado de Oportunidades</div>
+      <h1>Mercado de Dados Brasil</h1>
+      <p class="sub">Vagas de Ciência de Dados, Engenharia, Análise/BI e Bolsas Acadêmicas extraídas via web scraping e enriquecidas com filtros inteligentes.</p>
     </div>
-    <a href="index.html" class="nav-link">← Voltar ao Dashboard</a>
+    <div class="hd-actions">
+      <a href="index.html" class="nav-link">📊 Ver Dashboard Acadêmico</a>
+      <button class="nav-link btn-export" id="btnExportCSV">📥 Exportar CSV</button>
+      <button class="nav-link btn-export" id="btnExportJSON">📦 Exportar JSON</button>
+    </div>
   </header>
 
-  <!-- STATS -->
-  <div class="stats" id="stats">
-    <div class="stat"><div class="stat-n" id="s-total">—</div><div class="stat-l">Vagas esta semana</div></div>
-    <div class="stat"><div class="stat-n" id="s-adzuna">—</div><div class="stat-l">Adzuna</div></div>
-    <div class="stat"><div class="stat-n" id="s-gupy">—</div><div class="stat-l">Gupy</div></div>
-    <div class="stat"><div class="stat-n" id="s-data">—</div><div class="stat-l">Atualizado em</div></div>
-  </div>
-
-  <!-- BUSCA E FILTROS -->
-  <div style="display:flex;flex-direction:column;gap:10px">
-    <div class="search-row">
-      <input class="search" type="text" id="busca" placeholder="Buscar por título..." oninput="filtrar()">
+  <!-- ── STATS BAR ── -->
+  <section class="stats fade-in d-1">
+    <div class="stat">
+      <div class="stat-n" id="stTotal">0</div>
+      <div class="stat-l">Vagas no Feed</div>
     </div>
-    <div class="filtros">
-      <span class="fl">Categoria:</span>
-      <button class="fbtn on" onclick="setCategoria('',this)">Todas</button>
-      <button class="fbtn" onclick="setCategoria('Técnico (sem nível)',this)">Técnico</button>
-      <button class="fbtn" onclick="setCategoria('Sênior',this)">Sênior</button>
-      <button class="fbtn" onclick="setCategoria('Pleno',this)">Pleno</button>
-      <button class="fbtn" onclick="setCategoria('Júnior',this)">Júnior</button>
-      <button class="fbtn" onclick="setCategoria('Estágio / Trainee',this)">Estágio</button>
-      <button class="fbtn" onclick="setCategoria('Liderança',this)">Liderança</button>
-      <button class="fbtn" onclick="setCategoria('Bolsa de Pesquisa',this)">Bolsa</button>
+    <div class="stat">
+      <div class="stat-n g" id="stRemoto">0</div>
+      <div class="stat-l">Trabalho Remoto</div>
     </div>
-    <div class="filtros">
-      <span class="fl">Fonte:</span>
-      <button class="fbtn on" onclick="setFonte('',this)">Todas</button>
-      <button class="fbtn" onclick="setFonte('adzuna',this)">Adzuna</button>
-      <button class="fbtn" onclick="setFonte('gupy',this)">Gupy</button>
+    <div class="stat">
+      <div class="stat-n o" id="stEfetivas">0</div>
+      <div class="stat-l">Vagas CLT / PJ</div>
     </div>
-  </div>
+    <div class="stat">
+      <div class="stat-n p" id="stBolsas">0</div>
+      <div class="stat-l">Bolsas / Pesquisa</div>
+    </div>
+  </section>
 
-  <!-- GRID DE VAGAS -->
-  <div class="loading" id="loading">Carregando vagas...</div>
-  <div class="grid" id="grid" style="display:none"></div>
-  <div class="empty" id="empty" style="display:none">Nenhuma vaga encontrada com esses filtros.</div>
+  <!-- ── PAINEL DE FILTROS DINÂMICOS ── -->
+  <section class="filter-panel fade-in d-2">
+    <div class="search-bar-row">
+      <div class="search-wrap">
+        <input type="text" id="searchInput" class="search-input" placeholder="🔍 Buscar por título, empresa, tecnologia (Python, SQL, AWS) ou cidade...">
+      </div>
+      <select id="sortSelect" class="sort-select">
+        <option value="data-desc">Mais Recentes Primeiro</option>
+        <option value="data-asc">Mais Antigas Primeiro</option>
+        <option value="titulo-asc">Título (A → Z)</option>
+        <option value="salario-desc">Maior Salário Estimado</option>
+      </select>
+    </div>
 
-  <!-- FOOTER -->
-  <footer class="ft">
-    <span>Fatec Santana de Parnaíba · Guilherme Soares Santos &amp; Jonatas Oliveira de Lima · 2026</span>
-    <span id="ft-total"></span>
-  </footer>
+    <div class="filter-groups">
+      <!-- Áreas de Dados -->
+      <div class="filter-group">
+        <span class="fg-label">Área:</span>
+        <div class="pills" id="pillsArea">
+          <button class="pill active" data-filter="all">Todas</button>
+          <button class="pill" data-filter="Engenharia de Dados">Engenharia de Dados</button>
+          <button class="pill" data-filter="Ciência de Dados">Ciência de Dados</button>
+          <button class="pill" data-filter="Análise de Dados / BI">Análise / BI</button>
+          <button class="pill" data-filter="IA & Machine Learning">IA & ML</button>
+          <button class="pill" data-filter="Governança & Arquitetura">Governança & Arq.</button>
+          <button class="pill" data-filter="Bolsas de Pesquisa">Bolsas Acadêmicas</button>
+        </div>
+      </div>
+
+      <!-- Senioridade -->
+      <div class="filter-group">
+        <span class="fg-label">Nível:</span>
+        <div class="pills" id="pillsSenioridade">
+          <button class="pill active" data-filter="all">Todos</button>
+          <button class="pill" data-filter="Estágio / Trainee">Estágio / Trainee</button>
+          <button class="pill" data-filter="Júnior">Júnior</button>
+          <button class="pill" data-filter="Pleno">Pleno</button>
+          <button class="pill" data-filter="Sênior">Sênior</button>
+          <button class="pill" data-filter="Especialista">Especialista</button>
+          <button class="pill" data-filter="Liderança">Liderança</button>
+        </div>
+      </div>
+
+      <!-- Modalidade -->
+      <div class="filter-group">
+        <span class="fg-label">Modelo:</span>
+        <div class="pills" id="pillsModalidade">
+          <button class="pill active" data-filter="all">Todos</button>
+          <button class="pill" data-filter="Remoto">Remoto</button>
+          <button class="pill" data-filter="Híbrido">Híbrido</button>
+          <button class="pill" data-filter="Presencial">Presencial</button>
+        </div>
+      </div>
+
+      <!-- Tech Stack / Skills -->
+      <div class="filter-group">
+        <span class="fg-label">Tech Stack:</span>
+        <div class="pills" id="pillsSkills">
+          <button class="pill skill-pill active" data-filter="all">Qualquer</button>
+          <button class="pill skill-pill" data-filter="Python">Python</button>
+          <button class="pill skill-pill" data-filter="SQL">SQL</button>
+          <button class="pill skill-pill" data-filter="Power BI">Power BI</button>
+          <button class="pill skill-pill" data-filter="AWS">AWS</button>
+          <button class="pill skill-pill" data-filter="Azure">Azure</button>
+          <button class="pill skill-pill" data-filter="GCP">GCP</button>
+          <button class="pill skill-pill" data-filter="Spark">Spark</button>
+          <button class="pill skill-pill" data-filter="Tableau">Tableau</button>
+          <button class="pill skill-pill" data-filter="dbt">dbt</button>
+          <button class="pill skill-pill" data-filter="Machine Learning">Machine Learning</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="counter-row">
+      <span>Exibindo <b id="cntExibindo">0</b> de <b id="cntTotal">0</b> vagas filtradas</span>
+      <span id="txtAtualizacao">Carregando dados...</span>
+    </div>
+  </section>
+
+  <!-- ── GRID DE CARDS ── -->
+  <main id="jobsContainer" class="jobs-grid fade-in d-3">
+    <div class="state-box" style="grid-column:1/-1">
+      <h3>Carregando Oportunidades...</h3>
+      <p>Consultando base de vagas consolidada...</p>
+    </div>
+  </main>
+
+  <!-- ── PAGINAÇÃO ── -->
+  <nav class="pagination" id="paginationNav"></nav>
 
 </div>
 
 <script>
-let todasVagas = [];
-let categoriaAtiva = '';
-let fonteAtiva = '';
+/* ── ESTADO DA APLICAÇÃO ── */
+let TODAS_VAGAS = [];
+let VAGAS_FILTRADAS = [];
+let PAGINA_ATUAL = 1;
+const ITENS_POR_PAGINA = 24;
 
-// ── Carregar dados ────────────────────────────────────────────────────
-fetch('oportunidades_data.json')
-  .then(r => { if(!r.ok) throw new Error('sem dados'); return r.json(); })
-  .then(data => {
-    todasVagas = data.vagas || [];
+const filtros = {
+  busca: '',
+  area: 'all',
+  senioridade: 'all',
+  modalidade: 'all',
+  skill: 'all',
+  ordenacao: 'data-desc'
+};
 
-    // Stats
-    document.getElementById('s-total').textContent  = data.total.toLocaleString('pt-BR');
-    document.getElementById('s-data').textContent   = data.atualizado_em || '—';
-    document.getElementById('sub-text').textContent =
-      `${data.total.toLocaleString('pt-BR')} vagas coletadas automaticamente · Adzuna & Gupy · Atualizado ${data.atualizado_em}`;
-    document.getElementById('ft-total').textContent =
-      `${data.total.toLocaleString('pt-BR')} vagas · oportunidades_data.json`;
-
-    const porFonte = vagas => vagas.reduce((acc, v) => {
-      acc[v.Fonte] = (acc[v.Fonte] || 0) + 1; return acc;
-    }, {});
-    const f = porFonte(todasVagas);
-    document.getElementById('s-adzuna').textContent = (f['adzuna'] || 0).toLocaleString('pt-BR');
-    document.getElementById('s-gupy').textContent   = (f['gupy']   || 0).toLocaleString('pt-BR');
-
-    document.getElementById('loading').style.display = 'none';
-    filtrar();
-  })
-  .catch(() => {
-    document.getElementById('loading').textContent =
-      'oportunidades_data.json não encontrado. Execute: python gerar_dashboard.py';
-  });
-
-// ── Filtros ───────────────────────────────────────────────────────────
-function setCategoria(cat, btn) {
-  categoriaAtiva = cat;
-  document.querySelectorAll('.filtros .fbtn').forEach(b => {
-    if(b.onclick && b.onclick.toString().includes('setCategoria')) b.classList.remove('on');
-  });
-  btn.classList.add('on');
-  filtrar();
+/* ── CARREGAMENTO DE DADOS ── */
+async function carregarDados() {
+  try {
+    const res = await fetch('oportunidades_data.json');
+    if (!res.ok) throw new Error('Não foi possível carregar oportunidades_data.json');
+    const data = await res.json();
+    
+    TODAS_VAGAS = data.vagas || [];
+    document.getElementById('txtAtualizacao').textContent = `Base atualizada em: ${data.atualizado_em || 'Recente'}`;
+    
+    aplicarFiltros();
+  } catch (err) {
+    console.warn('Fallback: usando dados simulados caso json não exista.', err);
+    document.getElementById('jobsContainer').innerHTML = `
+      <div class="state-box" style="grid-column:1/-1">
+        <h3>Nenhuma vaga carregada ainda</h3>
+        <p>Execute <code>python main.py process</code> no terminal para gerar a base de vagas.</p>
+      </div>
+    `;
+  }
 }
 
-function setFonte(fonte, btn) {
-  fonteAtiva = fonte;
-  document.querySelectorAll('.filtros .fbtn').forEach(b => {
-    if(b.onclick && b.onclick.toString().includes('setFonte')) b.classList.remove('on');
+/* ── FILTRAGEM & ORDENAÇÃO ── */
+function aplicarFiltros() {
+  const buscaTermo = filtros.busca.toLowerCase().trim();
+
+  VAGAS_FILTRADAS = TODAS_VAGAS.filter(v => {
+    // 1. Busca textual
+    if (buscaTermo) {
+      const skillsStr = (v.Skills || []).join(' ').toLowerCase();
+      const match = (
+        (v.Titulo || '').toLowerCase().includes(buscaTermo) ||
+        (v.Empresa || '').toLowerCase().includes(buscaTermo) ||
+        (v.Local || '').toLowerCase().includes(buscaTermo) ||
+        (v.Area || '').toLowerCase().includes(buscaTermo) ||
+        skillsStr.includes(buscaTermo)
+      );
+      if (!match) return false;
+    }
+
+    // 2. Área
+    if (filtros.area !== 'all' && (v.Area || v.Categoria) !== filtros.area) {
+      return false;
+    }
+
+    // 3. Senioridade
+    if (filtros.senioridade !== 'all' && v.Senioridade !== filtros.senioridade) {
+      return false;
+    }
+
+    // 4. Modalidade
+    if (filtros.modalidade !== 'all' && v.Modalidade !== filtros.modalidade) {
+      return false;
+    }
+
+    // 5. Tech Stack / Skill
+    if (filtros.skill !== 'all') {
+      const skillsVaga = v.Skills || [];
+      if (!skillsVaga.includes(filtros.skill)) return false;
+    }
+
+    return true;
   });
-  btn.classList.add('on');
-  filtrar();
+
+  // Ordenação
+  if (filtros.ordenacao === 'titulo-asc') {
+    VAGAS_FILTRADAS.sort((a, b) => (a.Titulo || '').localeCompare(b.Titulo || ''));
+  } else if (filtros.ordenacao === 'data-asc') {
+    VAGAS_FILTRADAS.sort((a, b) => (a.Data || '').localeCompare(b.Data || ''));
+  } else {
+    // data-desc (padrão)
+    VAGAS_FILTRADAS.sort((a, b) => (b.Data || '').localeCompare(a.Data || ''));
+  }
+
+  PAGINA_ATUAL = 1;
+  atualizarEstatisticas();
+  renderizarVagas();
+  renderizarPaginacao();
 }
 
-function filtrar() {
-  const termo = (document.getElementById('busca').value || '').toLowerCase();
-  const resultado = todasVagas.filter(v => {
-    const okCat   = !categoriaAtiva || v.Categoria === categoriaAtiva;
-    const okFonte = !fonteAtiva     || v.Fonte     === fonteAtiva;
-    const okBusca = !termo          || v.Titulo.toLowerCase().includes(termo);
-    return okCat && okFonte && okBusca;
-  });
-  renderizar(resultado);
+/* ── STATS CARDS ── */
+function atualizarEstatisticas() {
+  document.getElementById('stTotal').textContent = VAGAS_FILTRADAS.length.toLocaleString('pt-BR');
+  
+  const remotas = VAGAS_FILTRADAS.filter(v => v.Modalidade === 'Remoto').length;
+  const bolsas = VAGAS_FILTRADAS.filter(v => (v.Area === 'Bolsas de Pesquisa' || v.Tipo?.includes('Bolsa'))).length;
+  const efetivas = VAGAS_FILTRADAS.length - bolsas;
+
+  document.getElementById('stRemoto').textContent = remotas.toLocaleString('pt-BR');
+  document.getElementById('stBolsas').textContent = bolsas.toLocaleString('pt-BR');
+  document.getElementById('stEfetivas').textContent = efetivas.toLocaleString('pt-BR');
+
+  document.getElementById('cntExibindo').textContent = Math.min(ITENS_POR_PAGINA, VAGAS_FILTRADAS.length);
+  document.getElementById('cntTotal').textContent = VAGAS_FILTRADAS.length.toLocaleString('pt-BR');
 }
 
-// ── Renderização dos cards ────────────────────────────────────────────
-function tagFonte(fonte) {
-  if(fonte === 'adzuna') return '<span class="tag tag-adzuna">adzuna</span>';
-  if(fonte === 'gupy')   return '<span class="tag tag-gupy">gupy</span>';
-  return '<span class="tag tag-outro">' + (fonte || '?') + '</span>';
-}
+/* ── RENDERIZAÇÃO DE CARDS ── */
+function renderizarVagas() {
+  const container = document.getElementById('jobsContainer');
+  container.innerHTML = '';
 
-function renderizar(vagas) {
-  const grid  = document.getElementById('grid');
-  const empty = document.getElementById('empty');
-
-  if(!vagas.length) {
-    grid.style.display  = 'none';
-    empty.style.display = 'block';
+  if (VAGAS_FILTRADAS.length === 0) {
+    container.innerHTML = `
+      <div class="state-box" style="grid-column:1/-1">
+        <h3>Nenhuma vaga encontrada</h3>
+        <p>Tente ajustar os termos de busca ou remover alguns filtros.</p>
+      </div>
+    `;
     return;
   }
 
-  grid.style.display  = '';
-  empty.style.display = 'none';
-  grid.innerHTML = vagas.map(v => `
-    <div class="card">
-      <div class="card-top">
-        <span class="card-titulo">${escHtml(v.Titulo)}</span>
-        ${tagFonte(v.Fonte)}
+  const inicio = (PAGINA_ATUAL - 1) * ITENS_POR_PAGINA;
+  const fim = inicio + ITENS_POR_PAGINA;
+  const paginaVagas = VAGAS_FILTRADAS.slice(inicio, fim);
+
+  document.getElementById('cntExibindo').textContent = `${inicio + 1} - ${Math.min(fim, VAGAS_FILTRADAS.length)}`;
+
+  paginaVagas.forEach(v => {
+    // Badge de modalidade
+    let modClass = 'tag-presencial';
+    if (v.Modalidade === 'Remoto') modClass = 'tag-remoto';
+    else if (v.Modalidade === 'Híbrido') modClass = 'tag-hibrido';
+
+    // Skills chips
+    const skillsHtml = (v.Skills && v.Skills.length > 0)
+      ? v.Skills.slice(0, 4).map(s => `<span class="skill-chip">${s}</span>`).join('')
+      : '';
+
+    const card = document.createElement('article');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="card-header">
+        <h2 class="card-title">${v.Titulo}</h2>
       </div>
+
+      <div class="card-badges">
+        <span class="badge-tag tag-area">${v.Area || 'Geral'}</span>
+        <span class="badge-tag tag-sen">${v.Senioridade || 'Não especificado'}</span>
+        ${v.Modalidade !== 'Não informado' ? `<span class="badge-tag ${modClass}">${v.Modalidade}</span>` : ''}
+        ${v.Tipo?.includes('Bolsa') ? `<span class="badge-tag tag-bolsa">Bolsa</span>` : ''}
+      </div>
+
       <div class="card-meta">
-        <span class="chip cat">${escHtml(v.Categoria)}</span>
-        <span class="chip">${escHtml(v.Data)}</span>
+        <div class="meta-item"><span class="meta-icon">🏢</span> <span>${v.Empresa || 'Empresa Confidencial'}</span></div>
+        <div class="meta-item"><span class="meta-icon">📍</span> <span>${v.Local || 'Brasil'}</span></div>
+        ${v.Salario && v.Salario !== 'Não informado' ? `<div class="meta-item"><span class="meta-icon">💰</span> <b style="color:var(--a2)">${v.Salario}</b></div>` : ''}
       </div>
-      <a class="card-link" href="${escHtml(v.Link)}" target="_blank" rel="noopener">
-        Ver vaga →
-      </a>
-    </div>
-  `).join('');
+
+      ${skillsHtml ? `<div class="card-skills">${skillsHtml}</div>` : ''}
+
+      <div class="card-footer">
+        <span class="card-source">${v.Fonte || 'Adzuna'} · ${v.Data || ''}</span>
+        <a href="${v.Link}" target="_blank" rel="noopener noreferrer" class="card-btn">Ver Vaga ↗</a>
+      </div>
+    `;
+    container.appendChild(card);
+  });
 }
 
-function escHtml(s) {
-  return String(s || '')
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+/* ── PAGINAÇÃO ── */
+function renderizarPaginacao() {
+  const nav = document.getElementById('paginationNav');
+  nav.innerHTML = '';
+
+  const totalPaginas = Math.ceil(VAGAS_FILTRADAS.length / ITENS_POR_PAGINA);
+  if (totalPaginas <= 1) return;
+
+  // Botão Anterior
+  const btnPrev = document.createElement('button');
+  btnPrev.className = 'page-btn';
+  btnPrev.textContent = '← Anterior';
+  btnPrev.disabled = PAGINA_ATUAL === 1;
+  btnPrev.onclick = () => { PAGINA_ATUAL--; renderizarVagas(); renderizarPaginacao(); window.scrollTo({top: 300, behavior: 'smooth'}); };
+  nav.appendChild(btnPrev);
+
+  // Páginas
+  for (let i = 1; i <= Math.min(totalPaginas, 7); i++) {
+    const btn = document.createElement('button');
+    btn.className = `page-btn ${i === PAGINA_ATUAL ? 'active' : ''}`;
+    btn.textContent = i;
+    btn.onclick = () => { PAGINA_ATUAL = i; renderizarVagas(); renderizarPaginacao(); window.scrollTo({top: 300, behavior: 'smooth'}); };
+    nav.appendChild(btn);
+  }
+
+  // Botão Próximo
+  const btnNext = document.createElement('button');
+  btnNext.className = 'page-btn';
+  btnNext.textContent = 'Próxima →';
+  btnNext.disabled = PAGINA_ATUAL === totalPaginas;
+  btnNext.onclick = () => { PAGINA_ATUAL++; renderizarVagas(); renderizarPaginacao(); window.scrollTo({top: 300, behavior: 'smooth'}); };
+  nav.appendChild(btnNext);
 }
+
+/* ── EVENT LISTENERS (FILTROS) ── */
+document.getElementById('searchInput').addEventListener('input', (e) => {
+  filtros.busca = e.target.value;
+  aplicarFiltros();
+});
+
+document.getElementById('sortSelect').addEventListener('change', (e) => {
+  filtros.ordenacao = e.target.value;
+  aplicarFiltros();
+});
+
+function bindPills(containerId, filterKey) {
+  const container = document.getElementById(containerId);
+  container.addEventListener('click', (e) => {
+    if (e.target.classList.contains('pill')) {
+      container.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+      e.target.classList.add('active');
+      filtros[filterKey] = e.target.dataset.filter;
+      aplicarFiltros();
+    }
+  });
+}
+
+bindPills('pillsArea', 'area');
+bindPills('pillsSenioridade', 'senioridade');
+bindPills('pillsModalidade', 'modalidade');
+bindPills('pillsSkills', 'skill');
+
+/* ── EXPORTAÇÃO CSV / JSON ── */
+document.getElementById('btnExportCSV').addEventListener('click', () => {
+  if (VAGAS_FILTRADAS.length === 0) return alert('Nenhuma vaga filtrada para exportar.');
+  
+  const headers = ['Titulo', 'Empresa', 'Area', 'Senioridade', 'Modalidade', 'Local', 'Salario', 'Fonte', 'Data', 'Link'];
+  const csvRows = [headers.join(',')];
+
+  VAGAS_FILTRADAS.forEach(v => {
+    const row = [
+      `"${(v.Titulo || '').replace(/"/g, '""')}"`,
+      `"${(v.Empresa || '').replace(/"/g, '""')}"`,
+      `"${v.Area || ''}"`,
+      `"${v.Senioridade || ''}"`,
+      `"${v.Modalidade || ''}"`,
+      `"${v.Local || ''}"`,
+      `"${v.Salario || ''}"`,
+      `"${v.Fonte || ''}"`,
+      `"${v.Data || ''}"`,
+      `"${v.Link || ''}"`
+    ];
+    csvRows.push(row.join(','));
+  });
+
+  const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `vagas_dados_filtradas_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+});
+
+document.getElementById('btnExportJSON').addEventListener('click', () => {
+  if (VAGAS_FILTRADAS.length === 0) return alert('Nenhuma vaga filtrada para exportar.');
+  const blob = new Blob([JSON.stringify(VAGAS_FILTRADAS, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `vagas_dados_filtradas_${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+});
+
+// Inicializa
+carregarDados();
 </script>
 </body>
 </html>
